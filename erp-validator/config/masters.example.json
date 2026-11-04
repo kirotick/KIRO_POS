@@ -1,0 +1,17 @@
+{
+  "_note": "EXAMPLE MASTER DATA so the tests and demo run. Replace with an export of your own vendor, item and location masters.",
+  "vendors": [
+    { "id": "V001", "name": "Sharma Steels Pvt Ltd", "aliases": ["Sharma Steel"], "items": ["RM-MS-12", "RM-MS-16", "BL-M10"] },
+    { "id": "V014", "name": "Sarna Steels", "aliases": [], "items": ["RM-MS-12"] },
+    { "id": "V021", "name": "Gupta Lubricants", "aliases": [], "items": ["OIL-HYD-68"] },
+    { "id": "V022", "name": "Gupta Lubricants and Greases", "aliases": [], "items": ["OIL-HYD-68", "GR-LI-2"] }
+  ],
+  "items": [
+    { "code": "RM-MS-12", "name": "MS Rod 12mm", "aliases": ["MS Rod"], "base_uom": "KG", "typical": { "min": 10, "max": 5000 }, "decimal": true },
+    { "code": "RM-MS-16", "name": "MS Rod 16mm", "aliases": [], "base_uom": "KG", "typical": { "min": 10, "max": 5000 }, "decimal": true },
+    { "code": "BL-M10", "name": "MS Bolt M10", "aliases": ["M10 Bolt"], "base_uom": "NOS", "typical": { "min": 100, "max": 20000 }, "decimal": false },
+    { "code": "OIL-HYD-68", "name": "Hydraulic Oil 68", "aliases": [], "base_uom": "L", "typical": { "min": 20, "max": 2000 }, "decimal": true },
+    { "code": "GR-LI-2", "name": "Lithium Grease EP2", "aliases": [], "base_uom": "KG", "typical": { "min": 1, "max": 200 }, "decimal": true }
+  ],
+  "locations": ["STORE-A", "STORE-B", "WIP-1", "DISPATCH"]
+}

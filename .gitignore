@@ -1,0 +1,20 @@
+node_modules/
+.env
+.env.*
+!.env.example
+dist/
+.expo/
+*.log
+__pycache__/
+*.pyc
+*.pem
+*.key
+*.p12
+*.jks
+*.mobileprovision
+.wrangler/
+.DS_Store
+
+# generated test bundle
+admin-app/e2e/out/
+e2e/out/

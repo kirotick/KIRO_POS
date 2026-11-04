@@ -1,0 +1,20 @@
+:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+input,select,textarea{background:#FBF7EE;color:#0E1A2B}input::placeholder,textarea::placeholder{color:rgba(14,26,43,.45)}input:focus,select:focus,textarea:focus{outline:2px solid rgba(232,71,43,.35);border-color:#E8472B}input[type=checkbox]{accent-color:#E8472B}input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px #FBF7EE inset;-webkit-text-fill-color:#0E1A2B}
+body{background:#fff;color:#0E1A2B;font-family:'Plus Jakarta Sans',system-ui,sans-serif;overflow-x:hidden}
+.fade{animation:f .25s ease}@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{transition:transform .2s,box-shadow .2s}.card:hover{transform:translateY(-4px);box-shadow:0 18px 40px -18px rgba(14,26,43,.25)}
+#authBox input,#authBox select{background:#FFF9EE;color:#0E1A2B;color-scheme:light}#authBox input::placeholder{color:rgba(14,26,43,.45)}#authBox input:focus,#authBox select:focus{outline:2px solid rgba(232,71,43,.25);border-color:#E8472B}
+.lbl{border:1px dashed #bbb;padding:6px;text-align:center;break-inside:avoid;background:#fff;color:#000}svg.bc{width:100%;max-width:200px;height:auto;display:block;margin:2px auto}
+@media print{body>*:not(#docBox){display:none!important}#docBox{position:static!important;overflow:visible!important}.np{display:none!important}}
+/* mobile quick billing: critical layout lives here (not in Tailwind) so it works even if the CDN is slow */
+.mbar,.msheet{display:none}
+.rc{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.4;color:#000;max-width:310px;margin:0 auto;padding:14px;background:#fff}.rc .r{display:flex;justify-content:space-between;gap:8px}.rc hr{border:0;border-top:1px dashed #000;margin:6px 0}
+@media print{.rc{max-width:none;margin:0;padding:0}}
+@media(max-width:767px){
+ .mbar{display:block;position:fixed;left:0;right:0;bottom:0;z-index:115;background:#fff;border-top:1px solid rgba(0,0,0,.1);padding:10px 12px calc(10px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.08)}
+ .msheet{display:flex;position:fixed;inset:0;z-index:116;background:rgba(0,0,0,.45);align-items:flex-end}
+ .msheet>div{background:#fff;width:100%;max-height:92vh;overflow-y:auto;border-radius:24px 24px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+ .mhide{display:none!important}.mpad{padding-bottom:170px}
+ #app input,#app select,#app textarea{font-size:16px}
+ #app button{touch-action:manipulation}
+}

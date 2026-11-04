@@ -1,0 +1,3 @@
+# Tells Netlify where the website files are. No build step is needed: it is plain HTML, CSS and JavaScript.
+[build]
+  publish = "web/site"

@@ -1,0 +1,15 @@
+{
+  "_note": "EXAMPLE RULES. Replace with your real ones. 'required' lists are the exact JSON keys your ERP accepts.",
+  "modules": {
+    "purchase_order": { "required": ["vendor_id", "item_code", "quantity", "uom"], "optional": ["rate", "delivery_date"] },
+    "inventory_log": { "required": ["item_code", "batch_no", "quantity", "uom", "location", "movement_type"], "optional": [] }
+  },
+  "vendorMustSupplyItem": true,
+  "convertToBaseUom": true,
+  "duplicateWindowMinutes": 10,
+  "movementTypes": {
+    "IN": ["in", "receipt", "receive", "received", "grn", "inward"],
+    "OUT": ["out", "issue", "issued", "consume", "consumed", "outward"],
+    "TRANSFER": ["transfer", "move", "moved", "shift"]
+  }
+}

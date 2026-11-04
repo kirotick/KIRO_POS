@@ -1,0 +1,45 @@
+# Render "Blueprint": creates the KIRO API server and its PostgreSQL database from this repository.
+# NOT tested by me (it needs your Render account). Check Render's current plans before you deploy:
+#  - free web services go to sleep when idle, so the 10 PM WhatsApp report can be missed;
+#  - free databases are limited and can expire. For a real shop choose a paid plan for both.
+databases:
+  - name: kiro-db
+    plan: free              # change to a paid plan for real use
+services:
+  - type: web
+    name: kiro-api
+    runtime: node
+    plan: free              # change to a paid plan so it never sleeps
+    rootDir: server/node
+    buildCommand: npm install
+    startCommand: npm run migrate && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kiro-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true     # Render makes a long random value for you
+      - key: PHONEPE_KEK
+        sync: false             # you enter it: openssl rand -base64 32
+      - key: PHONEPE_BASE_URL
+        sync: false             # from PhonePe's documentation for your account
+      - key: PUBLIC_BASE_URL
+        sync: false             # your API address, e.g. https://kiro-api.onrender.com (no slash at the end)
+      - key: CORS_ORIGINS
+        sync: false             # your admin website address(es), comma separated; may stay empty
+      - key: AI_API_KEY
+        sync: false             # optional
+      - key: AI_MODEL
+        sync: false             # optional
+      - key: WA_TOKEN
+        sync: false             # optional (nightly WhatsApp report)
+      - key: WA_PHONE_NUMBER_ID
+        sync: false             # optional
+      - key: WA_TEMPLATE
+        sync: false             # optional

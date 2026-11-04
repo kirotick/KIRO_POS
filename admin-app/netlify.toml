@@ -1,0 +1,15 @@
+# For the admin app WEBSITE on Netlify. Make this a SECOND Netlify site (the first is the KIRO website),
+# set its "Base directory" to admin-app, and add the environment variable EXPO_PUBLIC_API_URL in Netlify
+# (Site configuration > Environment variables) with your API address, https only.
+[build]
+  command = "npm install && npm run build:web"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Every address opens the app (single-page app).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

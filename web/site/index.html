@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KIRO — Business Operating System for MSMEs</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{ink:'#0E1A2B',kate:'#E8472B',mist:'#F6F5F2'},fontFamily:{sans:['Plus Jakarta Sans','system-ui','sans-serif']}}}}</script>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-black/5">
+ <nav class="max-w-7xl mx-auto px-5 h-16 flex items-center gap-6" aria-label="Main">
+  <a href="#" class="text-2xl font-extrabold tracking-tight">KIRO<span class="text-kate">.</span></a>
+  <div class="hidden lg:flex items-center gap-1 text-sm font-medium" id="navlinks"></div>
+  <div class="ml-auto hidden lg:flex items-center gap-3">
+   <a href="#" class="text-sm font-semibold px-3 py-2">Sign In</a>
+   <a href="#start" class="text-sm font-semibold bg-ink text-white px-4 py-2.5 rounded-full hover:bg-kate transition">Get Started</a></div>
+  <button id="burger" class="lg:hidden ml-auto p-2 rounded-lg border border-black/10" aria-label="Open menu" aria-expanded="false">☰</button>
+ </nav>
+ <div id="mega" class="hidden absolute left-0 right-0 top-16 bg-white border-b border-black/5 shadow-2xl"></div>
+ <div id="mobile" class="hidden lg:hidden bg-white border-t border-black/5 max-h-[80vh] overflow-y-auto px-5 py-4"></div>
+</header>
+
+<main id="home">
+<section class="bg-mist">
+ <div class="max-w-7xl mx-auto px-5 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
+  <div>
+   <p class="inline-block text-xs font-bold tracking-widest text-kate bg-kate/10 px-3 py-1 rounded-full">BUSINESS OPERATING SYSTEM FOR MSMEs</p>
+   <h1 class="mt-5 text-4xl sm:text-6xl font-extrabold leading-[1.05] tracking-tight">Run Your Business.<br><span class="text-kate">All in One Place.</span></h1>
+   <p class="mt-5 text-lg text-ink/70 max-w-xl">POS, payments, inventory, customers, marketing, analytics and more — built for growing businesses.</p>
+   <div class="mt-8 flex flex-wrap gap-3">
+    <a href="#start" class="bg-kate text-white font-semibold px-6 py-3.5 rounded-full hover:bg-ink transition">Get Started</a>
+    <a href="#/products" class="border border-ink/20 font-semibold px-6 py-3.5 rounded-full hover:bg-white transition">Explore KIRO</a></div>
+  </div>
+  <div class="bg-white rounded-3xl border border-black/5 shadow-2xl p-5">
+   <div class="flex justify-between items-center mb-4"><b>Today · Main Store</b><span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">● Live</span></div>
+   <div class="grid grid-cols-3 gap-3 text-sm">
+    <div class="rounded-2xl bg-mist p-3"><p class="text-ink/60 text-xs">Sales</p><p class="text-xl font-bold">₹48,260</p></div>
+    <div class="rounded-2xl bg-mist p-3"><p class="text-ink/60 text-xs">Orders</p><p class="text-xl font-bold">132</p></div>
+    <div class="rounded-2xl bg-mist p-3"><p class="text-ink/60 text-xs">Repeat</p><p class="text-xl font-bold">38%</p></div></div>
+   <div class="flex items-end gap-2 h-32 mt-4 px-1" id="bars"></div>
+   <div class="mt-4 rounded-2xl bg-ink text-white p-3 text-sm">✦ <b>KIRO AI:</b> Oat milk is running low — reorder 40 units before Friday.</div>
+  </div>
+ </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-5 py-20">
+ <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Built for the way you do business.</h2>
+ <div id="industryCards" class="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+</section>
+
+<section id="getApp" class="bg-mist"><div class="max-w-7xl mx-auto px-5 py-16 grid lg:grid-cols-2 gap-8 items-center">
+ <div><h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Your business in your pocket.</h2>
+  <p class="mt-3 text-ink/70 max-w-xl">Owners and managers can check today's sales, invoice numbers, who is using KIRO, GST and stock, and ask KIRO questions, from the KIRO Admin app.</p></div>
+ <div id="storeBadges" class="flex flex-wrap gap-3 lg:justify-end"></div>
+</div></section>
+
+</main>
+
+<main id="page" class="hidden"></main>
+
+<footer class="bg-ink text-white/70">
+ <div class="max-w-7xl mx-auto px-5 py-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
+  <div><p class="text-2xl font-extrabold text-white">KIRO<span class="text-kate">.</span></p><p class="mt-3">The business operating system for MSMEs.</p></div>
+  <div><p class="text-white font-semibold mb-2">Products</p><p>POS · Inventory · Payments · Website</p></div>
+  <div><p class="text-white font-semibold mb-2">Business Types</p><p>Food & Beverage · Retail · Beauty · Services</p></div>
+  <div><p class="text-white font-semibold mb-2">Company</p><p>About · Careers · Contact · Privacy</p></div>
+ </div>
+ <p class="text-center text-xs pb-8">© 2026 KIRO. All rights reserved.</p>
+</footer>
+
+
+<div id="login" class="hidden fixed inset-0 z-[100] bg-white overflow-y-auto" role="dialog" aria-modal="true" aria-label="Sign in to KIRO">
+ <div class="min-h-full grid lg:grid-cols-2">
+  <div class="flex flex-col justify-center px-6 sm:px-14 py-10 max-w-xl w-full mx-auto">
+   <div class="flex justify-between items-center mb-12"><a href="#" class="text-2xl font-extrabold tracking-tight">KIRO<span class="text-kate">.</span></a>
+    <button id="loginClose" class="text-sm font-semibold border border-black/15 rounded-full px-4 py-2 lg:hidden" aria-label="Close sign in">✕ Close</button></div>
+   <div id="authBox"></div>
+  </div>
+  <div class="hidden lg:block relative bg-ink">
+   <img src="girl.jpg" alt="Illustrated 3D girl with curly brown hair sitting calmly on grass" class="absolute inset-0 w-full h-full object-cover">
+   <div class="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent"></div>
+   <button id="loginClose2" class="absolute top-6 right-6 text-sm font-semibold bg-white/90 rounded-full px-4 py-2" aria-label="Close sign in">✕ Close</button>
+   <p class="absolute bottom-10 left-10 right-10 text-white text-2xl font-bold leading-snug">Run your business.<br>Stay calm.</p>
+  </div>
+ </div>
+</div>
+
+<div id="app" class="hidden fixed inset-0 z-[110] bg-mist overflow-y-auto" aria-label="KIRO workspace">
+ <header class="bg-white border-b border-black/5 sticky top-0 z-10"><div class="px-4 py-3 flex flex-wrap items-center gap-3"><b class="text-xl font-extrabold">KIRO<span class="text-kate">.</span></b><span id="appBiz" class="font-semibold text-sm"></span><span id="who" class="ml-auto text-xs text-ink/60"></span><button id="appHome" class="text-sm font-semibold border border-black/15 rounded-full px-4 py-2">Website</button><button id="appClose" class="text-sm font-semibold bg-ink text-white rounded-full px-4 py-2">Sign out</button></div></header>
+ <div class="p-4 grid lg:grid-cols-[220px_1fr] gap-4"><nav id="side" class="bg-white rounded-2xl p-3 text-sm h-fit flex lg:block gap-1 overflow-x-auto" aria-label="Modules"></nav><section id="main" class="min-w-0"></section></div>
+ <div id="bar"></div>
+</div>
+<div id="camBox" class="hidden fixed inset-0 z-[120] bg-black/80 flex items-center justify-center p-4" role="dialog" aria-label="Barcode scanner"><div class="bg-white rounded-2xl p-4 w-full max-w-md"><p class="font-bold mb-2">Scan barcode</p><div id="camView" class="rounded-xl overflow-hidden bg-black aspect-[4/3]"></div><p id="camMsg" class="text-sm mt-3 text-ink/70" role="status"></p><button id="camClose" class="mt-3 w-full bg-ink text-white rounded-full py-2.5 font-semibold">Close</button></div></div>
+<div id="docBox" class="hidden fixed inset-0 z-[130] bg-white overflow-y-auto"></div>
+<script src="script.js"></script>
+</body></html>

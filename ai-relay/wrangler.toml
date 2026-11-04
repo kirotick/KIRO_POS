@@ -1,0 +1,13 @@
+name = "kiro-ai-relay"
+main = "src/worker.js"
+compatibility_date = "2025-01-01"
+
+# Non-secret settings. The API key is a SECRET, never put it here:  npx wrangler secret put AI_API_KEY
+[vars]
+# Exact web addresses allowed to call the relay (comma separated), e.g. "https://www.yourshop.com"
+ALLOWED_ORIGINS = ""
+# Provider address and model. Example for Groq; check the provider's console for current model names.
+AI_BASE_URL = "https://api.groq.com/openai/v1"
+AI_MODEL = ""
+AI_HOURLY_PER_IP = "20"
+AI_DAILY_TOTAL = "500"

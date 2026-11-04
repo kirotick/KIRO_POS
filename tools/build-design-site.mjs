@@ -30,7 +30,7 @@ const LINK_TO = { Login: APP };
 // Claude artifacts the pages link to, now hosted on the website itself.
 const HOSTED = {
   'https://claude.ai/artifact/6uMQobCLzLjnhBckcGXr6e': APP,    // KIRO POS app      -> web/site/app/
-  'https://claude.ai/artifact/M2PJVfCTPsDaXaq59zy9qT': 'kkc/'  // KKC shop          -> web/site/kkc/
+  'https://claude.ai/artifact/M2PJVfCTPsDaXaq59zy9qT': 'lux/'  // KIRO LUX shop     -> web/site/lux/
 };
 
 // Removes the element with this id (and everything inside it) by counting nested tags of the same name.
@@ -71,7 +71,8 @@ const HERO_FIX = `<style id="kiro-hero-fix">
 function rewriteLinks(t) {
   t = t.replace(/([A-Za-z0-9_-]+)\.dc\.html/g, (m, name) => LINK_TO[name] || PAGES[name] || m);
   for (const [from, to] of Object.entries(HOSTED)) t = t.split(from).join(to);
-  return t;
+  // The shop was renamed from KKC to KIRO LUX. Base64 image data is skipped (no letter, digit, + or / beside it).
+  return t.replace(/(?<![A-Za-z0-9+\/])KKC(?![A-Za-z0-9+\/])/g, 'KIRO LUX');
 }
 
 for (const [name, file] of Object.entries(PAGES)) {

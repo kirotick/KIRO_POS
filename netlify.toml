@@ -6,3 +6,9 @@
 # index.html with broken quotes, which unstyled the "Book a free demo" button on the Home page.
 [build.processing]
   skip_processing = true
+
+# The KKC shop was renamed KIRO LUX and moved from /kkc/ to /lux/. Old links keep working.
+[[redirects]]
+  from = "/kkc/*"
+  to = "/lux/:splat"
+  status = 301

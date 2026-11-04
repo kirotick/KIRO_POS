@@ -6266,10 +6266,15 @@ window.KIRO_CLOUD = window.KIRO_CLOUD || { url: '', anonKey: '' };
     out += row('setupReopen', '', 'check', 'Show the setup guide');
     if (UI.cloud) out += row('goto', 'plan', 'lock', 'Plan and account');
     out += row('aboutKiro', '', 'note', 'About KIRO');
+    out += row('openSite', '', 'globe', 'KIRO website');
+    out += row('openKkc', '', 'store', 'KKC shop (kitchen supplies)');
     if (staffMode() && UI.user) out += '<div class="psep"></div>' + row('signOut', '', 'lock', 'Sign out') + row('signOut', '', 'userplus', 'Sign in as someone else');
     return out;
   }
   ACT.aboutKiro = function () { toast('KIRO ' + APP_VERSION + '. Your data is saved on this device.'); };
+  // Links to the rest of the KIRO website (this app is served at /app/).
+  ACT.openSite = function () { location.href = '../'; };
+  ACT.openKkc = function () { location.href = '../kkc/'; };
   ACT.profileSheet = function () { UI.profileOpen = false; openSheet('profileMenu'); };
   SHEETS.profileMenu = function () {
     return { title: S.settings.shop.name, body: '<div class="panel" role="menu" aria-label="Profile options">' + profileRows() + '</div>' };

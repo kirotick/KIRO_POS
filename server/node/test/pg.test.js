@@ -1,31 +1,16 @@
 'use strict';
-// Runs the real SQL (migration + src/store.js) on a real PostgreSQL via psql.
-// Skipped unless TEST_PG_HOST/TEST_PG_PORT/TEST_PG_DB are set (see README).
+// Runs the real SQL (migration + src/store.js) on a real PostgreSQL.
+// Skipped unless TEST_DATABASE_URL (preferred, e.g. the Neon "qa" branch) or TEST_PG_HOST/PORT/DB is set.
+// Drops and recreates the payment tables: never point it at production (pgpool.js refuses DATABASE_URL).
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { execFile } = require('child_process');
-const fs = require('fs'); const path = require('path');
-const { promisify } = require('util'); const run = promisify(execFile);
-const E = process.env;
-const enabled = E.TEST_PG_HOST && E.TEST_PG_PORT && E.TEST_PG_DB;
-const base = ['-X', '-q', '-At', '-v', 'ON_ERROR_STOP=1', '-v', 'VERBOSITY=verbose', '-h', E.TEST_PG_HOST, '-p', E.TEST_PG_PORT, '-U', E.TEST_PG_USER || 'kiro', '-d', E.TEST_PG_DB];
-
-const lit = (v) => v === null || v === undefined ? 'NULL' : v instanceof Date ? `'${v.toISOString()}'` : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`;
-// pg-Pool-compatible shim: substitutes $n safely-quoted, returns rows as JSON.
-const pool = { async query(text, params = []) {
-  const sql = text.replace(/\$(\d+)/g, (_, n) => lit(params[Number(n) - 1]));
-  try {
-    const { stdout } = await run('psql', [...base, '-c', `WITH r AS (${sql}) SELECT coalesce(json_agg(r),'[]'::json) FROM r`]);
-    return { rows: JSON.parse(stdout) };
-  } catch (e) { const m = /ERROR:\s+(\w{5}):/.exec(e.stderr || ''); const err = new Error('pg error'); err.code = m && m[1]; throw err; }
-} };
-const exec = (sql) => run('psql', [...base, '-c', sql]);
+const path = require('path');
+const { enabled, pool, file, exec } = require('./pgpool');
 
 test('real Postgres: migration + store + handlers', { skip: !enabled }, async () => {
-  const mig = fs.readFileSync(path.join(__dirname, '../migrations/001_phonepe.sql'), 'utf8');
-  await run('psql', [...base, '-c', 'DROP TABLE IF EXISTS phonepe_webhook_events, bills, merchant_payment_gateways CASCADE']);
-  await run('psql', [...base, '-f', path.join(__dirname, '../migrations/001_phonepe.sql')]);
-  await run('psql', [...base, '-f', path.join(__dirname, '../migrations/001_phonepe.sql')]); // re-run is harmless
+  await exec('DROP TABLE IF EXISTS phonepe_webhook_events, bills, merchant_payment_gateways CASCADE');
+  await file(path.join(__dirname, '../migrations/001_phonepe.sql'));
+  await file(path.join(__dirname, '../migrations/001_phonepe.sql')); // re-run is harmless
   const store = require('../src/store')(pool);
 
   await store.upsertGateway(1, 'MIDA', 'v1:aaa', '1');
@@ -48,7 +33,7 @@ test('real Postgres: migration + store + handlers', { skip: !enabled }, async ()
   assert.equal(await store.markReview(1, 'KRtxn1'), null);                       // Paid can't go to Review
   assert.equal(await store.setQr(1, b.id, 'KRtxn2', 'x', new Date()), null);     // Paid bill can't get a new QR
   assert.ok(await store.logEvent(1, 'KRtxn1', 'PAYMENT_SUCCESS', 'paid', { a: "it's", n: 1 }));
-  const ev = (await run('psql', [...base, '-c', "SELECT payload->>'a' FROM phonepe_webhook_events"])).stdout.trim();
+  const ev = (await pool.query("SELECT payload->>'a' AS a FROM phonepe_webhook_events")).rows[0].a;
   assert.equal(ev, "it's");
 
   // full webhook through handlers + real SQL
@@ -63,6 +48,6 @@ test('real Postgres: migration + store + handlers', { skip: !enabled }, async ()
   const b64 = b64json({ code: 'PAYMENT_SUCCESS', data: { merchantId: 'MIDE', merchantTransactionId: txn, amount: 9900 } });
   r = mkRes(); await h.webhook({ body: { response: b64 }, headers: { 'x-verify': pp.signCallback(b64, 'salt-for-e-123', '1') } }, r); assert.equal(r.code, 200);
   r = mkRes(); await h.billStatus({ auth: { businessId: 5 }, params: { id } }, r); assert.equal(r.body.status, 'Paid');
-  const stored = (await run('psql', [...base, '-c', "SELECT phonepe_salt_key FROM merchant_payment_gateways WHERE business_id=5"])).stdout.trim();
+  const stored = (await pool.query('SELECT phonepe_salt_key FROM merchant_payment_gateways WHERE business_id=5')).rows[0].phonepe_salt_key;
   assert.ok(stored.startsWith('v1:') && !stored.includes('salt-for-e-123'));
 });

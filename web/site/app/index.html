@@ -7597,7 +7597,7 @@ window.KIRO_CLOUD = window.KIRO_CLOUD || { url: '', anonKey: '' };
       '<button class="dsearch" data-act="searchOpen" aria-keyshortcuts="Control+K" aria-label="Search dishes, bills and settings">' + ic('search', 18) + '<span>Search</span><kbd>Ctrl K</kbd></button>' +
       (can('sell') ? '<button class="btn btn-primary dnew" data-act="newBill">' + ic('plus', 18, 2.4) + 'New bill</button>' : '') +
       '<button class="dicon" data-act="alertsSheet" aria-label="Notifications' + (alerts ? ', ' + alerts + ' need attention' : '') + '">' + ic('bell', 22) + (alerts ? '<span class="dot" aria-hidden="true">' + alerts + '</span>' : '') + '</button>' +
-      '<div class="dprofile"><button class="pchip" data-act="profileToggle" aria-haspopup="menu" aria-expanded="' + (UI.profileOpen ? 'true' : 'false') + '"><span class="pav" aria-hidden="true">' + esc(initials(who)) + '</span><span class="pname"><span>' + esc(who) + '</span><span>' + esc(role) + '</span></span>' + ic('chevron', 16, 2) + '</button>' + menu + '</div>' +
+      '<div class="dprofile"><button class="pchip" data-act="profileToggle" aria-haspopup="menu" aria-label="Profile and options: ' + esc(who) + ', ' + esc(role) + '" aria-expanded="' + (UI.profileOpen ? 'true' : 'false') + '"><span class="pav" aria-hidden="true">' + esc(initials(who)) + '</span><span class="pname"><span>' + esc(who) + '</span><span>' + esc(role) + '</span></span>' + ic('chevron', 16, 2) + '</button>' + menu + '</div>' +
       '</div>' + crumbs + '</header>';
   }
   ACT.profileToggle = function () { UI.profileOpen = !UI.profileOpen; render(); };

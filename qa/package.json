@@ -1,0 +1,31 @@
+{
+  "name": "kiro-qa",
+  "private": true,
+  "description": "KIRO automated quality checks: unit suites of every sub-project, browser tests of the live website, POS app and KIRO LUX shop (screens, motion, responsive, accessibility, visual), security and performance checks.",
+  "scripts": {
+    "qa": "node scripts/run-all.mjs",
+    "qa:unit": "node scripts/run-unit.mjs",
+    "qa:e2e": "playwright test --project=chromium tests/e2e",
+    "qa:screens": "playwright test --project=chromium tests/e2e/screens.spec.ts",
+    "qa:pos": "playwright test --project=chromium tests/e2e/pos-app.spec.ts",
+    "qa:shop": "playwright test --project=chromium tests/e2e/lux-shop.spec.ts",
+    "qa:motion": "playwright test --project=chromium tests/motion",
+    "qa:responsive": "playwright test --project=chromium tests/responsive",
+    "qa:mobile": "playwright test --project=chromium tests/responsive --grep @mobile",
+    "qa:a11y": "playwright test --project=chromium tests/accessibility",
+    "qa:visual": "playwright test --project=chromium tests/visual",
+    "qa:visual:update": "playwright test --project=chromium tests/visual --update-snapshots",
+    "qa:browsers": "playwright test --project=firefox --project=webkit --project=edge tests/e2e/screens.spec.ts tests/e2e/pos-app.spec.ts",
+    "qa:security": "node scripts/security.mjs",
+    "qa:perf": "playwright test --project=chromium tests/performance",
+    "qa:live": "cross-env-shell QA_BASE_URL=https://kiro-pos.netlify.app playwright test --project=chromium tests/e2e/screens.spec.ts tests/security",
+    "qa:report": "node scripts/report.mjs",
+    "qa:serve": "node scripts/serve.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.56.1",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.25.11"
+  }
+}

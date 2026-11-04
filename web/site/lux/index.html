@@ -198,6 +198,8 @@ footer{margin-top:34px;border-top:1px solid var(--line);padding:30px 16px 24px;b
 .seller-row button{flex:none;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;text-align:left;cursor:pointer;font-size:13px;font-weight:700;min-width:170px}
 .seller-row button small{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:2px}
 .tabs .tab svg text{font-family:'Inter',system-ui,sans-serif}
+/* Found by qa/tests/responsive: on 320px phones the four 72px category circles were wider than the screen. */
+@media (max-width:420px){.circles{grid-template-columns:repeat(4,minmax(0,1fr))}.circle{min-width:0}.circ{width:min(72px,100%);height:auto;aspect-ratio:1}}
 </style>
 </head>
 <body>
@@ -214,7 +216,7 @@ footer{margin-top:34px;border-top:1px solid var(--line);padding:30px 16px 24px;b
   <div class="search-row" style="padding-top:0">
     <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input id="q" type="search" placeholder="Search cutlery, utensils, tableware, cloths" autocomplete="off" aria-label="Search products"></label>
   </div>
-  <div class="cat-tabs" role="tablist" aria-label="Shop by category">
+  <div class="cat-tabs" role="group" aria-label="Shop by category">
     <button type="button" data-cat-open="all" aria-current="page">All</button>
     <button type="button" data-cat-open="cutlery">Cutlery</button>
     <button type="button" data-cat-open="utensils">Utensils</button>
@@ -232,7 +234,7 @@ footer{margin-top:34px;border-top:1px solid var(--line);padding:30px 16px 24px;b
         <div class="slide" style="background:linear-gradient(120deg,#C9A25B,#E6CFA0);color:#2A2412"><div><small>Pack offers</small><h2>Kitchen cloths in packs</h2><p>Stock up on towels and cleaning cloths.</p><button class="btn btn-dark" data-cat-open="cloths" type="button">Shop cloths</button></div></div>
         <div class="slide" style="background:linear-gradient(120deg,#0B4A58,#1E6E7E)"><div><small>Under ₹999</small><h2>Good cutlery and utensils</h2><p>Quality everyday pieces, all under ₹999.</p><button class="btn btn-line" data-go="under" type="button">See under ₹999</button></div></div>
       </div>
-      <div class="dots" id="dots" role="tablist" aria-label="Choose a slide"></div>
+      <div class="dots" id="dots" role="group" aria-label="Choose a slide"></div>
     </div>
 
     <div class="sec" style="padding-top:18px">

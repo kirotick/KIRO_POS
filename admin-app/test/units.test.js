@@ -2,7 +2,11 @@
 // Plain-Node tests for the app's logic modules (no React Native needed). esbuild turns the ES modules into CommonJS on the fly.
 const test = require('node:test'); const assert = require('node:assert/strict');
 const path = require('path'); const Module = require('module');
-const esbuild = require('/opt/npm-tools/node_modules/esbuild');
+// esbuild comes from this app's devDependencies, or from the repo's QA tools (qa/node_modules) when the
+// app's own packages are not installed. (It used to be a fixed path that only existed on one computer.)
+const esbuild = (() => {
+  try { return require('esbuild'); } catch (e) { return require(require.resolve('esbuild', { paths: [path.join(__dirname, '../../qa')] })); }
+})();
 const load = (f) => { const code = esbuild.buildSync({ entryPoints: [path.join(__dirname, '../src', f)], bundle: true, format: 'cjs', platform: 'node', write: false }).outputFiles[0].text;
   const m = new Module(f); m._compile(code, f); return m.exports; };
 const { inr, ago, when, cap } = load('format.js'); const { createApi, ApiError } = load('api.js');

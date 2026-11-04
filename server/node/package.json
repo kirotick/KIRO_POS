@@ -7,8 +7,12 @@
   },
   "scripts": {
     "start": "node src/server.js",
-    "test": "node --test \"test/*.test.js\"",
-    "migrate": "node scripts/migrate.js"
+    "test": "node --test --test-concurrency=1 \"test/*.test.js\"",
+    "test:db": "node --env-file=../../qa/.env --test --test-concurrency=1 \"test/*.test.js\"",
+    "migrate": "node scripts/migrate.js",
+    "migrate:local": "node --env-file=.env scripts/migrate.js",
+    "db:info": "node --env-file=.env scripts/db-info.js",
+    "users": "node scripts/users.js"
   },
   "dependencies": {
     "express": "^5.1.0",

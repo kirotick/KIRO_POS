@@ -1,0 +1,70 @@
+name: QA
+
+# Every push and pull request: unit suites, security scan and the Chromium browser suite.
+# Netlify deploys main on push; branch protection on "QA / required" blocks merging when this fails.
+# Weekly and on demand: the full run incl. Firefox, WebKit (Safari engine) and Edge.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '30 2 * * 1'
+  workflow_dispatch:
+
+jobs:
+  required:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults: { run: { working-directory: qa } }
+    env:
+      # Neon branch "qa" (never production). Add it under Settings > Secrets and variables > Actions.
+      # Without it the database tests are skipped, not failed.
+      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: 'qa/package-lock.json' }
+      - run: npm ci
+      - run: npm ci --no-audit --no-fund
+        working-directory: server/node
+      - name: Check the website build is up to date with its generator
+        working-directory: .
+        run: node --check tools/build-design-site.mjs && node --check web/site/dc-lite.js
+      - run: npx playwright install --with-deps chromium
+      - name: Quick QA (unit, security, Chromium browser suite)
+        run: node scripts/run-all.mjs --quick
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qa-report
+          path: |
+            qa/reports
+            qa/motion/MOTION_TEST_REPORT.md
+            qa/artifacts
+          retention-days: 14
+
+  full:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults: { run: { working-directory: qa } }
+    env:
+      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: 'qa/package-lock.json' }
+      - run: npm ci
+      - run: npm ci --no-audit --no-fund
+        working-directory: server/node
+      - run: npx playwright install chromium firefox webkit
+      - run: node scripts/run-all.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qa-full-report
+          path: |
+            qa/reports
+            qa/motion/MOTION_TEST_REPORT.md
+            qa/artifacts
+          retention-days: 30

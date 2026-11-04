@@ -14,9 +14,10 @@ const PAGES = {
   Main: 'index.html', Blog: 'blog.html', Downloads: 'downloads.html', Contact: 'contact.html',
   Login: 'login.html', Features: 'features.html', Pricing: 'pricing.html', Marketplace: 'marketplace.html'
 };
+// Pinned with Subresource Integrity, so browsers refuse a changed copy from the CDN (qa/scripts/security.mjs).
 const REACT = [
-  'https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js'
+  ['https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js', 'sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z'],
+  ['https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js', 'sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1']
 ];
 const HANDLE = 'kiro.pos'; // default Instagram handle from the Home page's settings
 
@@ -75,7 +76,43 @@ const HERO_FIX = `<style id="kiro-hero-fix">
 @media (prefers-reduced-motion:no-preference){
   #kiro-hero-cards .kh-card{animation:khBob 6s ease-in-out infinite !important;animation-delay:0s !important}
 }
+/* Found by qa/tests/motion: the tilted cards (.tilt, inline "kiroBob" animation) kept bobbing for visitors who
+   asked their device to reduce motion. Every other looping animation on the page already stops. */
+@media (prefers-reduced-motion:reduce){
+  .tilt{animation:none !important}
+}
 </style>`;
+
+// Small layout fixes found by qa/tests/responsive (pages scrolled sideways by a few pixels).
+// Each is an exact text swap in the canvas source; the build stops if the canvas changed and one no longer applies.
+const LAYOUT_FIXES = {
+  Main: [
+    // 320px phones: the "Billing Kitchen Tables Reports" pill row could not wrap.
+    ['<span style="display: flex; gap: 6px; font-size: 13px; font-weight: 700">', '<span style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; font-weight: 700">'],
+    // 320px phones: the two feature cards (Reservations, Day close...) refused to shrink below their text width.
+    ['flex:1 1 300px;min-width:0;display:grid;grid-template-columns:1fr 1fr;gap:12px', 'flex:1 1 300px;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px'],
+    // 1280px laptops: the floating "KOT #12" badge sat 6px past the screen edge.
+    ['position: absolute; right: -6px; top: 40px;', 'position: absolute; right: 0; top: 40px;'],
+    // Accessibility (qa/tests/accessibility, axe "critical"): the theme switcher is a tablist, so its buttons are tabs.
+    ['<button type="button" class="th-btn" data-i=', '<button type="button" class="th-btn" role="tab" data-i='],
+  ],
+  Login: [
+    // 320px phones: the sign-in card was wider than the screen.
+    ['<section aria-labelledby="signin-title" style="', '<section aria-labelledby="signin-title" style="min-width:0;max-width:100%;box-sizing:border-box;'],
+  ],
+};
+function applyLayoutFixes(name, t) {
+  for (const [from, to] of LAYOUT_FIXES[name] || []) {
+    if (!t.includes(from)) throw new Error(`${name}: layout fix no longer applies (canvas changed?): ${from.slice(0, 60)}`);
+    t = t.split(from).join(to);
+  }
+  return t;
+}
+
+// Browser-tab icon (the same KIRO icon as the POS app). Without it browsers ask for /favicon.ico and get a 404
+// (found by qa/tests/e2e/screens.spec.ts in Microsoft Edge).
+const ICON = '<link rel="icon" type="image/png" href="favicon.png">';
+const addIcon = (t) => (/rel="icon"/.test(t) ? t : t.replace('</head>', ICON + '\n</head>'));
 
 function rewriteLinks(t) {
   t = t.replace(/([A-Za-z0-9_-]+)\.dc\.html/g, (m, name) => LINK_TO[name] || PAGES[name] || m);
@@ -86,7 +123,7 @@ function rewriteLinks(t) {
 
 for (const [name, file] of Object.entries(PAGES)) {
   let t = fs.readFileSync(path.join(src, name + '.dc.html'), 'utf8');
-  t = rewriteLinks(t);
+  t = addIcon(applyLayoutFixes(name, rewriteLinks(t)));
   if (name === 'Main') t = removeLaunchScreen(t).replace('</head>', HERO_FIX + '\n</head>');
   t = t.replace(/<script src="\.\/support\.js"><\/script>\s*/g, '');
 
@@ -113,7 +150,7 @@ for (const [name, file] of Object.entries(PAGES)) {
 
   const boot =
     `<script id="dc-props" type="application/json">${safeJson(propsJson)}</script>\n` +
-    REACT.map((u) => `<script src="${u}" crossorigin="anonymous"></script>`).join('\n') + '\n' +
+    REACT.map(([u, sri]) => `<script src="${u}" integrity="${sri}" crossorigin="anonymous" referrerpolicy="no-referrer"></script>`).join('\n') + '\n' +
     `<script src="dc-lite.js"></script>\n` +
     `<script>\n${code}\nDCLite.mount(Component);\n</script>\n`;
 

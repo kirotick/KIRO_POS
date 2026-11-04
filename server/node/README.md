@@ -40,7 +40,13 @@ Cashier screen ──POST /api/bills/:id/phonepe-qr──▶ API ──signed /q
 | Per business: PhonePe MID, salt key, salt index | entered by the owner via `PUT /api/gateway`; stored encrypted in the database |
 | Callback URL registration | PhonePe merchant dashboard, if PhonePe requires it |
 
-Run: `psql "$DATABASE_URL" -f migrations/001_phonepe.sql && npm install && npm start`
+Run: `npm install && npm run migrate && npm start` (`npm run migrate` applies every file in `migrations/`; it is safe to repeat).
+
+### Database: Neon
+- Production: Neon project **kiro**, branch **production**. Put its pooled connection string (with `sslmode=verify-full`) in `DATABASE_URL`: on Render as an environment variable, locally in `server/node/.env` (git-ignored). Local commands: `npm run migrate:local`, `npm run db:info` (read-only table and row counts).
+- Developers: branch **dev** (`DEV_DATABASE_URL` in `server/node/.env`): test shop "KIRO Dev Cafe" with logins `dev-owner`, `dev-manager`, `dev-accounts`, `dev-cashier`. Their passwords are in `server/node/.env.dev-logins` (git-ignored, developer machine only).
+- Shops and logins (developers only): `npm run users -- list` shows a table of every shop and login (never passwords); `add-shop`, `add-login`, `reset`, `off`, `on` manage them; `--db dev|qa|production` (production also needs `--confirm-production`). Passwords are generated like `Kiro-4821-9073`, stored only as scrypt hashes, and shown once (or written to `--save <file>`); a forgotten password is replaced with `reset`, never looked up.
+- Tests: branch **qa** of the same project, in `qa/.env` as `TEST_DATABASE_URL`. The database tests drop and recreate every KIRO table there, and refuse to run if `TEST_DATABASE_URL` equals `DATABASE_URL`. A fresh test copy any time: `neonctl branches reset qa --parent --project-id fragrant-art-83601798`.
 
 ## KIRO core API (login, sales, invoices, staff, stock, Ask KIRO)
 Used by the mobile app in `../../admin-app`. Run `migrations/002_core.sql` after `001`. Money is integer paise. Every request is filtered by the caller's business; roles come from the database, not the token.
@@ -57,7 +63,7 @@ Used by the mobile app in `../../admin-app`. Run `migrations/002_core.sql` after
 | `GET /api/reports/insights` | owner/manager/accounts | dead stock, fast movers, expiry, low stock |
 | `POST /api/ask {question}` | owner/manager/accounts | **Ask KIRO**: keyword assistant answering from the above data (`{answer, intent, data}`); staff logins only for the owner; times in the business time zone |
 
-Tests: `TEST_PG_HOST=... TEST_PG_PORT=... TEST_PG_DB=... npm test` runs 28 tests including the core API on a real PostgreSQL. `src/app.js` has no CORS headers because native apps do not need them; add `cors` only if you serve a browser app from another origin.
+Tests: `npm run test:db` (uses `TEST_DATABASE_URL` from `qa/.env`) runs all 68 tests including the core API and the HTTP API (`test/http.test.js`: auth, forged/expired tokens, roles, tenant isolation between two businesses, SQL injection, CORS, login rate limit) on a real PostgreSQL. `TEST_PG_HOST/PORT/DB` with `psql` still works as before. `src/app.js` has no CORS headers because native apps do not need them; add `cors` only if you serve a browser app from another origin.
 
 ## Security built in
 Salt keys encrypted at rest and tenant-bound; constant-time signature compare; forged, wrong-tenant and altered payloads get 401 and change nothing; unknown merchant and bad signature return the same answer; atomic idempotent `Pending -> Paid` (8 simultaneous callbacks test: one wins); paid amount must equal bill amount or the bill goes to `Review`; a callback can only pay bills of the business whose salt signed it; every endpoint filters by `business_id` (other tenants get 404); request size limits, rate limit on the webhook, generic errors, no secrets in logs.
@@ -78,7 +84,7 @@ Salt keys encrypted at rest and tenant-bound; constant-time signature compare; f
 - Not built: refunds, reconciliation against PhonePe's status API for missed callbacks (recommended: poll PhonePe's status endpoint for bills still Pending after a few minutes), real login, push (SSE/WebSocket) updates.
 - If the QR string is longer than 213 bytes, KIRO's built-in `qrSvg` returns nothing; use a QR library for it.
 
-Run tests: `npm test` (add `TEST_PG_HOST`, `TEST_PG_PORT`, `TEST_PG_DB`, optional `TEST_PG_USER` to include the Postgres test; needs `psql` and an empty database).
+Run tests: `npm test` (database tests skip), or `npm run test:db` to include them on the Neon `qa` branch. On 2026-11-05 all 68 passed on Neon PostgreSQL 18, including `src/app.js` over real HTTP.
 
 ## Nightly owner report (10 PM, WhatsApp text)
 

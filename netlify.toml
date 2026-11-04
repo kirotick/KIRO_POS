@@ -7,6 +7,22 @@
 [build.processing]
   skip_processing = true
 
+# Security headers on every page (found missing by qa/scripts/security.mjs). A full Content-Security-Policy
+# is not set yet: the pages use inline scripts and embedded images, so it needs its own careful rollout.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
+    Permissions-Policy = "geolocation=(), microphone=(), payment=()"
+
+# Browsers that ask for /favicon.ico get the KIRO icon.
+[[redirects]]
+  from = "/favicon.ico"
+  to = "/favicon.png"
+  status = 200
+
 # The KKC shop was renamed KIRO LUX and moved from /kkc/ to /lux/. Old links keep working.
 [[redirects]]
   from = "/kkc/*"

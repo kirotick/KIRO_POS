@@ -1,10 +1,9 @@
-# Render "Blueprint": creates the KIRO API server and its PostgreSQL database from this repository.
+# Render "Blueprint": creates the KIRO API server from this repository.
+# The database is Neon (project "kiro", branch "production"), not a Render database.
 # NOT tested by me (it needs your Render account). Check Render's current plans before you deploy:
 #  - free web services go to sleep when idle, so the 10 PM WhatsApp report can be missed;
-#  - free databases are limited and can expire. For a real shop choose a paid plan for both.
-databases:
-  - name: kiro-db
-    plan: free              # change to a paid plan for real use
+#    for a real shop choose a paid plan.
+# Tests never use the production branch: they use the Neon branch "qa" (qa/.env, TEST_DATABASE_URL).
 services:
   - type: web
     name: kiro-api
@@ -20,9 +19,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: kiro-db
-          property: connectionString
+        sync: false             # you paste it: Neon console > project kiro > branch production > Connect (pooled, sslmode=verify-full)
       - key: JWT_SECRET
         generateValue: true     # Render makes a long random value for you
       - key: PHONEPE_KEK

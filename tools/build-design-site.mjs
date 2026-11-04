@@ -54,6 +54,20 @@ function removeLaunchScreen(t) {
   return t.replace(/<script>\(function\(\)\{var el=document\.getElementById\("kiro-launch"\)[\s\S]*?<\/script>/, '');
 }
 
+// Home page hero photo cards on laptops and desktops (wider than 900px; phones keep the canvas's 2x2 grid).
+// The canvas sizes the cards by width only, so on short or wide screens they ran into the stats bar or
+// were cut off. Here the size is also limited by the screen height, and the bottom cards sit above the bar.
+const HERO_FIX = `<style id="kiro-hero-fix">
+@media (min-width:901px){
+  #kiro-hero-cards{--kh-edge:clamp(16px,2.5vw,48px);--kh-above-bar:calc(clamp(20px,4vh,40px) + 128px)}
+  #kiro-hero-cards .kh-card{aspect-ratio:.62;height:auto}
+  #kiro-hero-cards .kh-card.kh-a{left:var(--kh-edge);right:auto;top:7%;bottom:auto;width:min(13vw,17vh,230px)}
+  #kiro-hero-cards .kh-card.kh-c{left:var(--kh-edge);right:auto;top:auto;bottom:var(--kh-above-bar);width:min(13vw,17vh,230px)}
+  #kiro-hero-cards .kh-card.kh-b{left:auto;right:var(--kh-edge);top:5%;bottom:auto;width:min(12vw,16vh,215px)}
+  #kiro-hero-cards .kh-card.kh-d{left:auto;right:var(--kh-edge);top:auto;bottom:calc(var(--kh-above-bar) + 24px);width:min(11vw,15vh,200px)}
+}
+</style>`;
+
 function rewriteLinks(t) {
   t = t.replace(/([A-Za-z0-9_-]+)\.dc\.html/g, (m, name) => LINK_TO[name] || PAGES[name] || m);
   for (const [from, to] of Object.entries(HOSTED)) t = t.split(from).join(to);
@@ -63,7 +77,7 @@ function rewriteLinks(t) {
 for (const [name, file] of Object.entries(PAGES)) {
   let t = fs.readFileSync(path.join(src, name + '.dc.html'), 'utf8');
   t = rewriteLinks(t);
-  if (name === 'Main') t = removeLaunchScreen(t);
+  if (name === 'Main') t = removeLaunchScreen(t).replace('</head>', HERO_FIX + '\n</head>');
   t = t.replace(/<script src="\.\/support\.js"><\/script>\s*/g, '');
 
   const xs = t.indexOf('<x-dc>'), xe = t.lastIndexOf('</x-dc>');

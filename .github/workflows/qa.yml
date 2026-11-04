@@ -13,7 +13,8 @@ on:
 
 jobs:
   required:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest became 26.04, which Playwright 1.56 cannot install browsers on yet.
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     defaults: { run: { working-directory: qa } }
     env:

@@ -4,13 +4,21 @@
 <meta charset="utf-8">
 <title>KIRO, the easy way to run your food business</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500&amp;display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Parisienne&amp;display=swap"><style>section[aria-labelledby="cover-title"]::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,0,0,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.07) 1px,transparent 1px);background-size:56px 56px;z-index:0}</style><style>.kc{position:relative;width:100%;max-width:640px;margin:20px auto 16px;overflow:hidden}.kc-track{display:flex;gap:16px;transition:transform .8s cubic-bezier(.22,.8,.2,1);will-change:transform;padding:6px 0}.kc-slide{flex:0 0 min(200px,42vw);aspect-ratio:3/4;border-radius:22px;overflow:hidden;box-shadow:none;background:#FFFFFF}.kc-slide img{width:100%;height:100%;object-fit:cover;display:block}.kc-empty{background:transparent;box-shadow:none}.kc-logo{display:flex;align-items:center;justify-content:center;padding:14px;height:100%;box-sizing:border-box}.kc-logo img{width:100%;height:auto;object-fit:contain}.kc-dots{display:flex;gap:8px;justify-content:center;margin-top:14px}.kc-dots button{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:rgba(0,0,0,.22);cursor:pointer}.kc-dots button[aria-selected="true"]{background:#B81104}@media (prefers-reduced-motion:reduce){.kc-track{transition:none}}</style><style>.menuwrap{display:inline-flex;position:static;margin:0;padding:0}.menuwrap>summary{list-style:none}.menuwrap>summary::-webkit-details-marker{display:none}.mobmenu{position:absolute;left:0;right:0;top:100%;z-index:70;box-shadow:0 14px 26px rgba(0,0,0,.10)}details.menuwrap:not([open])>.mobmenu{display:none !important}#kiro-splash{animation:kiroSplashOut .5s ease 2.6s forwards}@keyframes kiroSplashOut{to{opacity:0;visibility:hidden}}</style><style id="kiro-hero-fix">
+@keyframes khBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @media (min-width:901px){
-  #kiro-hero-cards{--kh-edge:clamp(16px,2.5vw,48px);--kh-above-bar:calc(clamp(20px,4vh,40px) + 128px)}
-  #kiro-hero-cards .kh-card{aspect-ratio:.62;height:auto}
-  #kiro-hero-cards .kh-card.kh-a{left:var(--kh-edge);right:auto;top:7%;bottom:auto;width:min(13vw,17vh,230px)}
-  #kiro-hero-cards .kh-card.kh-c{left:var(--kh-edge);right:auto;top:auto;bottom:var(--kh-above-bar);width:min(13vw,17vh,230px)}
-  #kiro-hero-cards .kh-card.kh-b{left:auto;right:var(--kh-edge);top:5%;bottom:auto;width:min(12vw,16vh,215px)}
-  #kiro-hero-cards .kh-card.kh-d{left:auto;right:var(--kh-edge);top:auto;bottom:calc(var(--kh-above-bar) + 24px);width:min(11vw,15vh,200px)}
+  #kiro-hero-cards{--kh-w:clamp(88px,min(9.5vw,14.5vh),170px);--kh-edge:clamp(20px,3vw,56px);--kh-top:max(6%,36px);--kh-above-bar:calc(clamp(20px,4vh,40px) + 132px)}
+  #kiro-hero-cards .kh-card.kh-a,#kiro-hero-cards .kh-card.kh-b,#kiro-hero-cards .kh-card.kh-c,#kiro-hero-cards .kh-card.kh-d{width:var(--kh-w);height:auto;aspect-ratio:.66;border-radius:18px}
+  #kiro-hero-cards .kh-card.kh-a{left:var(--kh-edge);right:auto;top:var(--kh-top);bottom:auto}
+  #kiro-hero-cards .kh-card.kh-c{left:var(--kh-edge);right:auto;top:auto;bottom:var(--kh-above-bar)}
+  #kiro-hero-cards .kh-card.kh-b{left:auto;right:var(--kh-edge);top:var(--kh-top);bottom:auto}
+  #kiro-hero-cards .kh-card.kh-d{left:auto;right:var(--kh-edge);top:auto;bottom:var(--kh-above-bar)}
+}
+@media (max-width:900px){
+  #kiro-hero-cards{grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:clamp(8px,2.5vw,14px) !important;max-width:480px;margin-left:auto !important;margin-right:auto !important;margin-bottom:20px !important;padding:14px 16px 0 !important}
+  #kiro-hero-cards .kh-card{aspect-ratio:.66 !important;border-radius:14px !important}
+}
+@media (prefers-reduced-motion:no-preference){
+  #kiro-hero-cards .kh-card{animation:khBob 6s ease-in-out infinite !important;animation-delay:0s !important}
 }
 </style>
 </head>

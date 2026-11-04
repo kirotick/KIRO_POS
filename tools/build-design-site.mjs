@@ -23,8 +23,16 @@ const HANDLE = 'kiro.pos'; // default Instagram handle from the Home page's sett
 const decode = (s) => s.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 const safeJson = (s) => s.replace(/<\//g, '<\\/');
 
+// The KIRO POS app lives at web/site/app/. Every "Log in" and "Start free trial" button opens it,
+// and so does the Log in page's own link to the app (which pointed at its claude.ai address).
+const APP = 'app/';
+const LINK_TO = { Login: APP };
+const APP_ARTIFACT = 'https://claude.ai/artifact/6uMQobCLzLjnhBckcGXr6e';
+
 function rewriteLinks(t) {
-  return t.replace(/([A-Za-z0-9_-]+)\.dc\.html/g, (m, name) => PAGES[name] || m);
+  return t
+    .replace(/([A-Za-z0-9_-]+)\.dc\.html/g, (m, name) => LINK_TO[name] || PAGES[name] || m)
+    .split(APP_ARTIFACT).join(APP);
 }
 
 for (const [name, file] of Object.entries(PAGES)) {

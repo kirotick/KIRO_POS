@@ -1,0 +1,28 @@
+name: Update visual baselines (Linux)
+
+# Run by hand (Actions > Update visual baselines > Run workflow) after an intended design change.
+# Takes fresh screenshots on the same Linux machine type as the QA check and commits them, so the
+# QA check can compare screenshots too. Review the committed images before relying on them.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  baselines:
+    runs-on: ubuntu-24.04
+    defaults: { run: { working-directory: qa } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: 'qa/package-lock.json' }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --project=chromium tests/visual --update-snapshots
+      - name: Commit the new baselines
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/visual/baselines
+          git diff --cached --quiet && echo "No changes" || git commit -m "Update Linux visual baselines" && git push

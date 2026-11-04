@@ -1,6 +1,6 @@
 # KIRO QA report
 
-Run: 5/11/2026, 1:12:47 am · Machine: win32 · Browsers: chromium, webkit, edge
+Run: 5/11/2026, 1:14:30 am · Machine: win32 · Browsers: chromium, webkit, edge
 
 ## Summary
 
@@ -8,11 +8,11 @@ Run: 5/11/2026, 1:12:47 am · Machine: win32 · Browsers: chromium, webkit, edge
 |---|---|---|---|---|---|
 | Unit suites (Node) | 109 | 109 | 0 | 0 | 0 |
 | Browser · other (Chromium) | 279 | 277 | 0 | 0 | 2 |
-| Cross-browser · webkit | 33 | 32 | 1 | 0 | 0 |
+| Cross-browser · webkit | 33 | 33 | 0 | 0 | 0 |
 | Cross-browser · edge | 33 | 33 | 0 | 0 | 0 |
 | Security scan | 1 findings | — | P0 0 · P1 0 | P2 0 | P3 1 |
 
-**Browser tests: 342/345 passed (99%), 1 failed, 2 skipped. Unit: 109/109 passed.** Skipped and not-run items are never counted as passed.
+**Browser tests: 343/345 passed (99%), 0 failed, 2 skipped. Unit: 109/109 passed.** Skipped and not-run items are never counted as passed.
 
 Steps: PASS Unit tests of every sub-project (46s) · PASS Security scan (5s) · PASS Browser tests in Chromium: screens, POS, shop, motion, responsive, accessibility, visual, performance, XSS (200s) · FAIL Cross-browser: webkit, edge (97s)
 
@@ -20,7 +20,6 @@ Steps: PASS Unit tests of every sub-project (46s) · PASS Security scan (5s) · 
 
 | Severity | Where | What | Detail |
 |---|---|---|---|
-| P1 | other · webkit | bill: totals, GST split and round-off are consistent | TypeError: Cannot read properties of undefined (reading 'split') |
 | P3 | security · headers | missing content-security-policy | https://kiro-pos.netlify.app/ → Add it under [[headers]] in netlify.toml. |
 | P3 | accessibility · Features | color-contrast: Elements must meet minimum color contrast ratio thresholds | 4 element(s), e.g. div:nth-child(1) > span:nth-child(2) |
 | P3 | accessibility · Home | color-contrast: Elements must meet minimum color contrast ratio thresholds | 14 element(s), e.g. section:nth-child(7) > .reveal.in:nth-child(1) > span |
@@ -379,7 +378,7 @@ Environment: local API server on this PC + Neon free tier (Singapore), PostgreSQ
 | ✅ | other | edge | search narrows products |  |
 | ✅ | other | edge | wishlist and bag: add, count badges, quantity, remove, checkout validation |  |
 | ✅ | other | webkit | setup: business name is required, sample menu loads |  |
-| ❌ | other | webkit | bill: totals, GST split and round-off are consistent | TypeError: Cannot read properties of undefined (reading 'split') |
+| ✅ | other | webkit | bill: totals, GST split and round-off are consistent |  |
 | ✅ | other | webkit | rapid clicks on "Cash received" create exactly one bill |  |
 | ✅ | other | webkit | rapid clicks on an item tile add one item per click, no more |  |
 | ✅ | other | webkit | paid bill survives a page refresh (saved on the device) |  |

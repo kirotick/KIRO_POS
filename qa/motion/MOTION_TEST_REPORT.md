@@ -1,6 +1,6 @@
 # KIRO motion test report
 
-Run: 5/11/2026, 1:12:47 am · Chromium (headless, no GPU). Normal motion and reduced motion are tested separately.
+Run: 5/11/2026, 1:14:30 am · Chromium (headless, no GPU). Normal motion and reduced motion are tested separately.
 
 | | Test | Error |
 |---|---|---|

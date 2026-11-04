@@ -33,6 +33,27 @@ const HOSTED = {
   'https://claude.ai/artifact/M2PJVfCTPsDaXaq59zy9qT': 'kkc/'  // KKC shop          -> web/site/kkc/
 };
 
+// Removes the element with this id (and everything inside it) by counting nested tags of the same name.
+function removeElementById(t, id) {
+  const start = t.search(new RegExp(`<([a-zA-Z][\\w-]*)[^>]*\\sid="${id}"`));
+  if (start < 0) return t;
+  const tag = /^<([a-zA-Z][\w-]*)/.exec(t.slice(start))[1];
+  const re = new RegExp(`<${tag}\\b[^>]*>|</${tag}>`, 'g');
+  re.lastIndex = start;
+  let depth = 0, m;
+  while ((m = re.exec(t))) {
+    depth += m[0][1] === '/' ? -1 : 1;
+    if (depth === 0) return t.slice(0, start) + t.slice(re.lastIndex);
+  }
+  return t;
+}
+
+// Removed from the Home page on the owner's request: the launch screen with the pink flower photo.
+function removeLaunchScreen(t) {
+  t = removeElementById(t, 'kiro-launch');
+  return t.replace(/<script>\(function\(\)\{var el=document\.getElementById\("kiro-launch"\)[\s\S]*?<\/script>/, '');
+}
+
 function rewriteLinks(t) {
   t = t.replace(/([A-Za-z0-9_-]+)\.dc\.html/g, (m, name) => LINK_TO[name] || PAGES[name] || m);
   for (const [from, to] of Object.entries(HOSTED)) t = t.split(from).join(to);
@@ -42,6 +63,7 @@ function rewriteLinks(t) {
 for (const [name, file] of Object.entries(PAGES)) {
   let t = fs.readFileSync(path.join(src, name + '.dc.html'), 'utf8');
   t = rewriteLinks(t);
+  if (name === 'Main') t = removeLaunchScreen(t);
   t = t.replace(/<script src="\.\/support\.js"><\/script>\s*/g, '');
 
   const xs = t.indexOf('<x-dc>'), xe = t.lastIndexOf('</x-dc>');

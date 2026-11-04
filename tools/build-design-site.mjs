@@ -27,12 +27,16 @@ const safeJson = (s) => s.replace(/<\//g, '<\\/');
 // and so does the Log in page's own link to the app (which pointed at its claude.ai address).
 const APP = 'app/';
 const LINK_TO = { Login: APP };
-const APP_ARTIFACT = 'https://claude.ai/artifact/6uMQobCLzLjnhBckcGXr6e';
+// Claude artifacts the pages link to, now hosted on the website itself.
+const HOSTED = {
+  'https://claude.ai/artifact/6uMQobCLzLjnhBckcGXr6e': APP,    // KIRO POS app      -> web/site/app/
+  'https://claude.ai/artifact/M2PJVfCTPsDaXaq59zy9qT': 'kkc/'  // KKC shop          -> web/site/kkc/
+};
 
 function rewriteLinks(t) {
-  return t
-    .replace(/([A-Za-z0-9_-]+)\.dc\.html/g, (m, name) => LINK_TO[name] || PAGES[name] || m)
-    .split(APP_ARTIFACT).join(APP);
+  t = t.replace(/([A-Za-z0-9_-]+)\.dc\.html/g, (m, name) => LINK_TO[name] || PAGES[name] || m);
+  for (const [from, to] of Object.entries(HOSTED)) t = t.split(from).join(to);
+  return t;
 }
 
 for (const [name, file] of Object.entries(PAGES)) {

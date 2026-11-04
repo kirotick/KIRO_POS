@@ -11,7 +11,9 @@ const { requireAuth, requireLiveUser } = require('./auth');
 const { buildApp } = require('./app');
 
 const c = loadConfig();
-const pool = new Pool({ connectionString: c.databaseUrl, max: 10 });
+// PG_POOL_MAX: database connections the server may use at once (default 10). Raise it with a pooled
+// (pgbouncer) Neon address when many cashiers bill at the same time; see qa/load results.
+const pool = new Pool({ connectionString: c.databaseUrl, max: Number(process.env.PG_POOL_MAX) || 10 });
 const coreStore = makeCoreStore(pool);
 const handlers = createHandlers({ store: makeStore(pool), kek: c.kek, cfg: c.cfg, fetchImpl: fetch });
 const core = createCoreHandlers({ store: coreStore, jwtSecret: c.jwtSecret, ai: createAi({ store: coreStore }) });

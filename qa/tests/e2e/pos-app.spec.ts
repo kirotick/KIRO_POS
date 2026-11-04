@@ -29,6 +29,8 @@ test('bill: totals, GST split and round-off are consistent', async ({ page }) =>
   await page.locator('[data-act="payMethod"][data-arg="cash"]').click();
   await page.locator('[data-act="cashQuick"][data-arg="20000"]').click();
   await page.locator('[data-act="payCash"]').click();
+  await expect(page.getByText('Taxable value')).toBeVisible(); // wait for the receipt before reading it
+  await expect(page.getByText('Round off')).toBeVisible();
   const receipt = await page.locator('body').innerText();
   // Independent check of the receipt arithmetic: items + CGST + SGST + round off = total.
   const num = (label: string) => rupees(receipt.split(label)[1].split('\n').find((l) => /₹/.test(l))!);

@@ -58,10 +58,10 @@ const unavailable = read('browsers-unavailable.json') || [];
 const NOT_TESTED = [
   ...unavailable.map((b) => `${b === 'webkit' ? 'WebKit (Safari engine)' : b[0].toUpperCase() + b.slice(1)}: could not start on this machine (for Firefox on Windows usually the missing Microsoft Visual C++ runtime); runs in the weekly GitHub Actions job.`),
   ...(process.env.TEST_DATABASE_URL || fs.existsSync(path.join(qa, '.env')) ? [] : ['Server database and HTTP API tests: TEST_DATABASE_URL not set, so they were skipped.']),
-  'Load tests at 10–500 concurrent users with k6 (k6 not installed, and the API server is not deployed; the static site is served by Netlify’s CDN and must not be load-tested in production).',
+  'Load above 100 simultaneous users (250, 500): not attempted on the Neon free tier; the static site on Netlify’s CDN is never load-tested in production.',
   'The deployed API server: not deployed yet, so its HTTP tests run against a local server on the Neon “qa” branch, not against Render.',
   'Admin app (Expo / React Native) screens on Android and iOS: needs emulators or devices (Appium not set up). Its logic modules are unit-tested.',
-  'Saree desktop app (Electron): has no tests at all.',
+  'Saree desktop app (Electron): its billing and stock logic has 7 tests on SQLite; the Electron windows themselves are not driven.',
   'Physical hardware: thermal/A4 printers, barcode scanners, cash drawers, Bluetooth/USB devices. Print and WhatsApp buttons are only checked to exist.',
   'Real devices and real Safari on iPhone/Mac: WebKit on Windows is the Safari engine, not Safari itself. Emulated phones are not equal to physical phones.',
   'Cloud sign-in, plan checks, online orders, PhonePe payments and nightly WhatsApp report: need accounts and sandbox credentials.',
@@ -86,6 +86,13 @@ md.push('## Screens covered', '', [...new Set(tests.map((t) => (t.title.match(/^
 md.push('## Performance (local server, Chromium)', '', '| Page | LCP ms | DOMContentLoaded ms | Load ms | Weight KB | Requests | DOM nodes |', '|---|---|---|---|---|---|---|');
 for (const p of perf.filter((p) => p.page)) md.push(`| ${p.page} | ${p.lcpMs} | ${p.domContentLoadedMs} | ${p.loadMs} | ${p.pageWeightKB} | ${p.requests} | ${p.domNodes} |`);
 const bills = perf.find((p) => p.bills); if (bills) md.push('', `POS app, ${bills.bills} bills in a row: average ${bills.avgMs} ms per whole bill, median ${bills.medianMs}, p95 ${bills.p95Ms}, max ${bills.maxMs}.`);
+let loads = ['load-pool10.json', 'load-pool20.json'].map((f) => [f, read(f)]).filter(([, x]) => x);
+if (!loads.length && read('load.json')) loads = [['load', read('load.json')]];
+if (loads.length) {
+  md.push('', '## Load test (k6, API server on the Neon "qa" test branch)', '', '| Run | Users | Requests | Req/s | Errors | All p95 ms | Reads p95 ms | Sales p95 ms | Thresholds |', '|---|---|---|---|---|---|---|---|---|');
+  for (const [f, l] of loads) md.push(`| ${f.replace('.json', '')} | 1→${l.peakUsers} | ${l.requests} | ${l.requestsPerSecond} | ${(l.errorRate * 100).toFixed(2)}% | ${l.allRequestsMs?.p95} | ${l.readMs?.p95} | ${l.saleMs?.p95} | ${l.passed ? 'met' : 'NOT met'} |`);
+  md.push('', `Environment: ${loads[0][1].environment}. Run it with \`npm run qa:load\` (needs k6 and qa/.env).`);
+}
 md.push('', '## Accessibility (axe, WCAG 2.1 A/AA)', '', '| Page | Critical | Serious | Moderate/minor |', '|---|---|---|---|');
 for (const p of a11y) md.push(`| ${p.page} | ${p.violations.filter((v) => v.impact === 'critical').length} | ${p.violations.filter((v) => v.impact === 'serious').map((v) => `${v.id} (${v.nodes})`).join(', ') || 0} | ${p.violations.filter((v) => !['critical', 'serious'].includes(v.impact)).length} |`);
 md.push('', '## Not tested (blocked or out of reach)', '', ...NOT_TESTED.map((n) => `- ${n}`), '');

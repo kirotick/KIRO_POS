@@ -1,29 +1,27 @@
 # KIRO QA report
 
-Run: 5/11/2026, 12:37:06 am · Machine: win32 · Browsers: chromium, webkit, edge
+Run: 5/11/2026, 1:12:47 am · Machine: win32 · Browsers: chromium, webkit, edge
 
 ## Summary
 
 | Area | Total | Passed | Failed | Flaky | Skipped |
 |---|---|---|---|---|---|
-| Unit suites (Node) | 102 | 102 | 0 | 0 | 0 |
+| Unit suites (Node) | 109 | 109 | 0 | 0 | 0 |
 | Browser · other (Chromium) | 279 | 277 | 0 | 0 | 2 |
-| Cross-browser · webkit | 33 | 33 | 0 | 0 | 0 |
+| Cross-browser · webkit | 33 | 32 | 1 | 0 | 0 |
 | Cross-browser · edge | 33 | 33 | 0 | 0 | 0 |
-| Security scan | 4 findings | — | P0 0 · P1 0 | P2 0 | P3 4 |
+| Security scan | 1 findings | — | P0 0 · P1 0 | P2 0 | P3 1 |
 
-**Browser tests: 343/345 passed (99%), 0 failed, 2 skipped. Unit: 102/102 passed.** Skipped and not-run items are never counted as passed.
+**Browser tests: 342/345 passed (99%), 1 failed, 2 skipped. Unit: 109/109 passed.** Skipped and not-run items are never counted as passed.
 
-Steps: PASS Unit tests of every sub-project (51s) · PASS Security scan (5s) · PASS Browser tests in Chromium: screens, POS, shop, motion, responsive, accessibility, visual, performance, XSS (173s) · PASS Cross-browser: webkit, edge (96s)
+Steps: PASS Unit tests of every sub-project (46s) · PASS Security scan (5s) · PASS Browser tests in Chromium: screens, POS, shop, motion, responsive, accessibility, visual, performance, XSS (200s) · FAIL Cross-browser: webkit, edge (97s)
 
 ## Bugs and findings
 
 | Severity | Where | What | Detail |
 |---|---|---|---|
-| P3 | security · headers | missing x-content-type-options | https://kiro-pos.netlify.app/ → Add it under [[headers]] in netlify.toml. |
-| P3 | security · headers | missing referrer-policy | https://kiro-pos.netlify.app/ → Add it under [[headers]] in netlify.toml. |
+| P1 | other · webkit | bill: totals, GST split and round-off are consistent | TypeError: Cannot read properties of undefined (reading 'split') |
 | P3 | security · headers | missing content-security-policy | https://kiro-pos.netlify.app/ → Add it under [[headers]] in netlify.toml. |
-| P3 | security · headers | page can be framed by other sites (clickjacking) | https://kiro-pos.netlify.app/ → Add X-Frame-Options: DENY or CSP frame-ancestors. |
 | P3 | accessibility · Features | color-contrast: Elements must meet minimum color contrast ratio thresholds | 4 element(s), e.g. div:nth-child(1) > span:nth-child(2) |
 | P3 | accessibility · Home | color-contrast: Elements must meet minimum color contrast ratio thresholds | 14 element(s), e.g. section:nth-child(7) > .reveal.in:nth-child(1) > span |
 | P3 | accessibility · KIRO LUX shop | color-contrast: Elements must meet minimum color contrast ratio thresholds | 11 element(s), e.g. button[data-cat-open="all"] |
@@ -41,18 +39,27 @@ Home, Features, Pricing, Marketplace, Blog, Downloads, Contact, Log in, POS app,
 
 | Page | LCP ms | DOMContentLoaded ms | Load ms | Weight KB | Requests | DOM nodes |
 |---|---|---|---|---|---|---|
-| Blog | 348 | 227 | 460 | 105 | 5 | 138 |
-| Contact | 260 | 183 | 382 | 109 | 5 | 156 |
-| Downloads | 268 | 184 | 410 | 104 | 5 | 113 |
-| Features | 748 | 398 | 658 | 246 | 2 | 231 |
-| Home | 284 | 491 | 808 | 546 | 7 | 1169 |
-| KIRO LUX shop | 180 | 134 | 134 | 802 | 1 | 365 |
-| Log in (old page) | 324 | 193 | 397 | 134 | 5 | 77 |
-| Marketplace | 684 | 358 | 619 | 52 | 2 | 221 |
-| POS app | 348 | 304 | 305 | 619 | 4 | 51 |
-| Pricing | 784 | 379 | 681 | 233 | 2 | 236 |
+| Blog | 276 | 165 | 392 | 105 | 5 | 138 |
+| Contact | 284 | 196 | 386 | 109 | 5 | 156 |
+| Downloads | 288 | 161 | 348 | 104 | 5 | 113 |
+| Features | 624 | 303 | 544 | 246 | 2 | 231 |
+| Home | 324 | 828 | 1190 | 546 | 7 | 1169 |
+| KIRO LUX shop | 224 | 175 | 176 | 802 | 1 | 365 |
+| Log in (old page) | 292 | 180 | 372 | 134 | 5 | 77 |
+| Marketplace | 596 | 314 | 549 | 52 | 2 | 221 |
+| POS app | 424 | 352 | 353 | 619 | 4 | 51 |
+| Pricing | 664 | 291 | 587 | 233 | 2 | 236 |
 
-POS app, 60 bills in a row: average 451 ms per whole bill, median 424, p95 636, max 854.
+POS app, 60 bills in a row: average 490 ms per whole bill, median 463, p95 659, max 818.
+
+## Load test (k6, API server on the Neon "qa" test branch)
+
+| Run | Users | Requests | Req/s | Errors | All p95 ms | Reads p95 ms | Sales p95 ms | Thresholds |
+|---|---|---|---|---|---|---|---|---|
+| load-pool10 | 1→100 | 4506 | 27.1 | 0.00% | 2879 | 3031 | 1551 | NOT met |
+| load-pool20 | 1→100 | 7041 | 42.8 | 0.00% | 1219 | 1325 | 685 | met |
+
+Environment: local API server on this PC + Neon free tier (Singapore), PostgreSQL 18, pool max 10 connections. Run it with `npm run qa:load` (needs k6 and qa/.env).
 
 ## Accessibility (axe, WCAG 2.1 A/AA)
 
@@ -73,10 +80,10 @@ POS app, 60 bills in a row: average 451 ms per whole bill, median 424, p95 636, 
 ## Not tested (blocked or out of reach)
 
 - Firefox: could not start on this machine (for Firefox on Windows usually the missing Microsoft Visual C++ runtime); runs in the weekly GitHub Actions job.
-- Load tests at 10–500 concurrent users with k6 (k6 not installed, and the API server is not deployed; the static site is served by Netlify’s CDN and must not be load-tested in production).
+- Load above 100 simultaneous users (250, 500): not attempted on the Neon free tier; the static site on Netlify’s CDN is never load-tested in production.
 - The deployed API server: not deployed yet, so its HTTP tests run against a local server on the Neon “qa” branch, not against Render.
 - Admin app (Expo / React Native) screens on Android and iOS: needs emulators or devices (Appium not set up). Its logic modules are unit-tested.
-- Saree desktop app (Electron): has no tests at all.
+- Saree desktop app (Electron): its billing and stock logic has 7 tests on SQLite; the Electron windows themselves are not driven.
 - Physical hardware: thermal/A4 printers, barcode scanners, cash drawers, Bluetooth/USB devices. Print and WhatsApp buttons are only checked to exist.
 - Real devices and real Safari on iPhone/Mac: WebKit on Windows is the Safari engine, not Safari itself. Emulated phones are not equal to physical phones.
 - Cloud sign-in, plan checks, online orders, PhonePe payments and nightly WhatsApp report: need accounts and sandbox credentials.
@@ -372,7 +379,7 @@ POS app, 60 bills in a row: average 451 ms per whole bill, median 424, p95 636, 
 | ✅ | other | edge | search narrows products |  |
 | ✅ | other | edge | wishlist and bag: add, count badges, quantity, remove, checkout validation |  |
 | ✅ | other | webkit | setup: business name is required, sample menu loads |  |
-| ✅ | other | webkit | bill: totals, GST split and round-off are consistent |  |
+| ❌ | other | webkit | bill: totals, GST split and round-off are consistent | TypeError: Cannot read properties of undefined (reading 'split') |
 | ✅ | other | webkit | rapid clicks on "Cash received" create exactly one bill |  |
 | ✅ | other | webkit | rapid clicks on an item tile add one item per click, no more |  |
 | ✅ | other | webkit | paid bill survives a page refresh (saved on the device) |  |

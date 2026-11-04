@@ -14,7 +14,12 @@ const run = (label, cmd, args, env = {}) => {
   const r = spawnSync(cmd, args, { cwd: qa, stdio: 'inherit', shell: true, env: { ...process.env, ...env } });
   return { label, ok: r.status === 0, seconds: Math.round((Date.now() - t) / 1000) };
 };
+// Fresh artifacts each run, but keep the last load-test results (npm run qa:load is run separately).
+const keep = {};
+for (const f of ['load.json', 'load-pool10.json', 'load-pool20.json', 'k6-summary.json']) { try { keep[f] = fs.readFileSync(path.join(qa, 'artifacts', f)); } catch {} }
 fs.rmSync(path.join(qa, 'artifacts'), { recursive: true, force: true });
+fs.mkdirSync(path.join(qa, 'artifacts'), { recursive: true });
+for (const [f, b] of Object.entries(keep)) fs.writeFileSync(path.join(qa, 'artifacts', f), b);
 const steps = [
   run('Unit tests of every sub-project', 'node', ['scripts/run-unit.mjs']),
   run('Security scan', 'node', ['scripts/security.mjs']),

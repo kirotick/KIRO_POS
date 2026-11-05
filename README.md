@@ -1,3 +1,6 @@
+> **This repository is archived (read-only) since 2026-11-05.** KIRO now lives in ten repositories, each with the full history of its files:
+> [kiro-web](https://github.com/kirotick/kiro-web) · [kiro-pos](https://github.com/kirotick/kiro-pos) · [kiro-mobile](https://github.com/kirotick/kiro-mobile) · [kiro-backend](https://github.com/kirotick/kiro-backend) · [kiro-payments](https://github.com/kirotick/kiro-payments) · [kiro-database](https://github.com/kirotick/kiro-database) · [kiro-infrastructure](https://github.com/kirotick/kiro-infrastructure) · [kiro-security](https://github.com/kirotick/kiro-security) · [kiro-documentation](https://github.com/kirotick/kiro-documentation) · [kiro-qa-testing](https://github.com/kirotick/kiro-qa-testing).
+> The live site kiro-pos.netlify.app is built from kiro-web. desktop-saree/ is kept only here (owner decision D2). Plan: kiro-documentation/governance/REPOSITORY_MIGRATION_PLAN.md.
 # KIRO platform
 
 POS, ERP and pharmacy software for Indian small businesses. This repository holds every part of KIRO in one place.

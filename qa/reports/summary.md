@@ -1,20 +1,21 @@
 # KIRO QA report
 
-Run: 5/11/2026, 1:14:30 am · Machine: win32 · Browsers: chromium, webkit, edge
+Run: 5/11/2026, 9:52:28 am · Machine: win32 · Browsers: chromium, webkit, edge, chrome
 
 ## Summary
 
 | Area | Total | Passed | Failed | Flaky | Skipped |
 |---|---|---|---|---|---|
 | Unit suites (Node) | 109 | 109 | 0 | 0 | 0 |
-| Browser · other (Chromium) | 279 | 277 | 0 | 0 | 2 |
+| Browser · other (Chromium) | 283 | 281 | 0 | 0 | 2 |
 | Cross-browser · webkit | 33 | 33 | 0 | 0 | 0 |
 | Cross-browser · edge | 33 | 33 | 0 | 0 | 0 |
+| Cross-browser · chrome | 33 | 33 | 0 | 0 | 0 |
 | Security scan | 1 findings | — | P0 0 · P1 0 | P2 0 | P3 1 |
 
-**Browser tests: 343/345 passed (99%), 0 failed, 2 skipped. Unit: 109/109 passed.** Skipped and not-run items are never counted as passed.
+**Browser tests: 380/382 passed (99%), 0 failed, 2 skipped. Unit: 109/109 passed.** Skipped and not-run items are never counted as passed.
 
-Steps: PASS Unit tests of every sub-project (46s) · PASS Security scan (5s) · PASS Browser tests in Chromium: screens, POS, shop, motion, responsive, accessibility, visual, performance, XSS (200s) · FAIL Cross-browser: webkit, edge (97s)
+Steps: PASS Unit tests of every sub-project (68s) · PASS Security scan (18s) · PASS Browser tests in Chromium: screens, POS, shop, motion, responsive, accessibility, visual, XSS (266s) · PASS Performance in Chromium (measured alone) (69s) · PASS Cross-browser: chrome, webkit, edge (162s)
 
 ## Bugs and findings
 
@@ -38,18 +39,18 @@ Home, Features, Pricing, Marketplace, Blog, Downloads, Contact, Log in, POS app,
 
 | Page | LCP ms | DOMContentLoaded ms | Load ms | Weight KB | Requests | DOM nodes |
 |---|---|---|---|---|---|---|
-| Blog | 276 | 165 | 392 | 105 | 5 | 138 |
-| Contact | 284 | 196 | 386 | 109 | 5 | 156 |
-| Downloads | 288 | 161 | 348 | 104 | 5 | 113 |
-| Features | 624 | 303 | 544 | 246 | 2 | 231 |
-| Home | 324 | 828 | 1190 | 546 | 7 | 1169 |
-| KIRO LUX shop | 224 | 175 | 176 | 802 | 1 | 365 |
-| Log in (old page) | 292 | 180 | 372 | 134 | 5 | 77 |
-| Marketplace | 596 | 314 | 549 | 52 | 2 | 221 |
-| POS app | 424 | 352 | 353 | 619 | 4 | 51 |
-| Pricing | 664 | 291 | 587 | 233 | 2 | 236 |
+| Blog | 760 | 563 | 1057 | 106 | 5 | 150 |
+| Contact | 592 | 507 | 990 | 110 | 5 | 168 |
+| Downloads | 644 | 545 | 1647 | 104 | 5 | 125 |
+| Features | 1220 | 641 | 1144 | 247 | 2 | 243 |
+| Home | 632 | 671 | 1607 | 547 | 7 | 1181 |
+| KIRO LUX shop | 304 | 269 | 270 | 802 | 1 | 365 |
+| Log in (old page) | 620 | 482 | 960 | 135 | 5 | 89 |
+| Marketplace | 1272 | 583 | 1154 | 53 | 2 | 233 |
+| POS app | 604 | 588 | 589 | 589 | 4 | 52 |
+| Pricing | 1344 | 679 | 1242 | 234 | 2 | 248 |
 
-POS app, 60 bills in a row: average 490 ms per whole bill, median 463, p95 659, max 818.
+POS app, 60 bills in a row: average 458 ms per whole bill, median 453, p95 513, max 583.
 
 ## Load test (k6, API server on the Neon "qa" test branch)
 
@@ -137,6 +138,10 @@ Environment: local API server on this PC + Neon free tier (Singapore), PostgreSQ
 | ✅ | other | chromium | POS app (/app/) › internal links all resolve |  |
 | ✅ | other | chromium | KIRO LUX shop (/lux/) › loads with content, a title and no errors |  |
 | ✅ | other | chromium | KIRO LUX shop (/lux/) › internal links all resolve |  |
+| ✅ | other | chromium | zoom 125%: hero cards scale with the heading |  |
+| ✅ | other | chromium | zoom 100%: hero cards scale with the heading |  |
+| ✅ | other | chromium | zoom 80%: hero cards scale with the heading |  |
+| ✅ | other | chromium | zoom 67%: hero cards scale with the heading |  |
 | ✅ | other | chromium | normal motion › hero cards: same size, bob up and down together, never touch text or each other |  |
 | ✅ | other | chromium | normal motion › hero photos cross-fade to new pictures while moving |  |
 | ✅ | other | chromium | normal motion › frame rate and layout shift on the Home page |  |
@@ -145,19 +150,8 @@ Environment: local API server on this PC + Neon free tier (Singapore), PostgreSQ
 | ✅ | other | chromium | normal motion › no full-screen intro blocks the page after loading |  |
 | ✅ | other | chromium | normal motion › POS app: sheets open usable mid-animation, toasts appear and go away |  |
 | ✅ | other | chromium | normal motion › only intended animations run forever |  |
-| ✅ | other | chromium | reduced motion (visitor turned animations off) › hero cards stand still, stay the same size and visible |  |
+| ✅ | other | chromium | reduced motion (visitor turned animations off) › hero cards still move together and swap photos, same size |  |
 | ✅ | other | chromium | reduced motion (visitor turned animations off) › every page: nothing runs forever, content still reachable |  |
-| ✅ | other | chromium | load performance: Home |  |
-| ✅ | other | chromium | load performance: Features |  |
-| ✅ | other | chromium | load performance: Pricing |  |
-| ✅ | other | chromium | load performance: Marketplace |  |
-| ✅ | other | chromium | load performance: Blog |  |
-| ✅ | other | chromium | load performance: Downloads |  |
-| ✅ | other | chromium | load performance: Contact |  |
-| ✅ | other | chromium | load performance: Log in (old page) |  |
-| ✅ | other | chromium | load performance: POS app |  |
-| ✅ | other | chromium | load performance: KIRO LUX shop |  |
-| ✅ | other | chromium | POS app stays fast with 60 bills in a day |  |
 | ✅ | other | chromium | 320x568 mobile @mobile › Home |  |
 | ✅ | other | chromium | 320x568 mobile @mobile › Features |  |
 | ✅ | other | chromium | 320x568 mobile @mobile › Pricing |  |
@@ -371,12 +365,26 @@ Environment: local API server on this PC + Neon free tier (Singapore), PostgreSQ
 | ✅ | other | chromium | 1366x768 › Log in (old page) |  |
 | ✅ | other | chromium | 1366x768 › POS app |  |
 | ✅ | other | chromium | 1366x768 › KIRO LUX shop |  |
+| ✅ | other | chromium | load performance: Home |  |
+| ✅ | other | chromium | load performance: Features |  |
+| ✅ | other | chromium | load performance: Pricing |  |
+| ✅ | other | chromium | load performance: Marketplace |  |
+| ✅ | other | chromium | load performance: Blog |  |
+| ✅ | other | chromium | load performance: Downloads |  |
+| ✅ | other | chromium | load performance: Contact |  |
+| ✅ | other | chromium | load performance: Log in (old page) |  |
+| ✅ | other | chromium | load performance: POS app |  |
+| ✅ | other | chromium | load performance: KIRO LUX shop |  |
+| ✅ | other | chromium | POS app stays fast with 60 bills in a day |  |
 | ✅ | other | webkit | categories filter the catalogue |  |
 | ✅ | other | webkit | search narrows products |  |
 | ✅ | other | webkit | wishlist and bag: add, count badges, quantity, remove, checkout validation |  |
 | ✅ | other | edge | categories filter the catalogue |  |
 | ✅ | other | edge | search narrows products |  |
 | ✅ | other | edge | wishlist and bag: add, count badges, quantity, remove, checkout validation |  |
+| ✅ | other | chrome | categories filter the catalogue |  |
+| ✅ | other | chrome | search narrows products |  |
+| ✅ | other | chrome | wishlist and bag: add, count badges, quantity, remove, checkout validation |  |
 | ✅ | other | webkit | setup: business name is required, sample menu loads |  |
 | ✅ | other | webkit | bill: totals, GST split and round-off are consistent |  |
 | ✅ | other | webkit | rapid clicks on "Cash received" create exactly one bill |  |
@@ -389,6 +397,12 @@ Environment: local API server on this PC + Neon free tier (Singapore), PostgreSQ
 | ✅ | other | edge | rapid clicks on an item tile add one item per click, no more |  |
 | ✅ | other | edge | paid bill survives a page refresh (saved on the device) |  |
 | ✅ | other | edge | More menu links to the website and the KIRO LUX shop |  |
+| ✅ | other | chrome | setup: business name is required, sample menu loads |  |
+| ✅ | other | chrome | bill: totals, GST split and round-off are consistent |  |
+| ✅ | other | chrome | rapid clicks on "Cash received" create exactly one bill |  |
+| ✅ | other | chrome | rapid clicks on an item tile add one item per click, no more |  |
+| ✅ | other | chrome | paid bill survives a page refresh (saved on the device) |  |
+| ✅ | other | chrome | More menu links to the website and the KIRO LUX shop |  |
 | ✅ | other | webkit | main navigation reaches every website page, back and forward work |  |
 | ✅ | other | webkit | Log in and Start free trial open the POS app |  |
 | ✅ | other | webkit | old /kkc/ address redirects to the KIRO LUX shop |  |
@@ -397,45 +411,69 @@ Environment: local API server on this PC + Neon free tier (Singapore), PostgreSQ
 | ✅ | other | edge | Log in and Start free trial open the POS app |  |
 | ✅ | other | edge | old /kkc/ address redirects to the KIRO LUX shop |  |
 | ✅ | other | edge | website forms and filters: contact validation, blog filter, FAQ, login tabs |  |
+| ✅ | other | chrome | main navigation reaches every website page, back and forward work |  |
+| ✅ | other | chrome | Log in and Start free trial open the POS app |  |
+| ✅ | other | chrome | old /kkc/ address redirects to the KIRO LUX shop |  |
+| ✅ | other | chrome | website forms and filters: contact validation, blog filter, FAQ, login tabs |  |
 | ✅ | other | webkit | Home (/) › loads with content, a title and no errors |  |
 | ✅ | other | webkit | Home (/) › internal links all resolve |  |
 | ✅ | other | edge | Home (/) › loads with content, a title and no errors |  |
 | ✅ | other | edge | Home (/) › internal links all resolve |  |
+| ✅ | other | chrome | Home (/) › loads with content, a title and no errors |  |
+| ✅ | other | chrome | Home (/) › internal links all resolve |  |
 | ✅ | other | webkit | Features (/features.html) › loads with content, a title and no errors |  |
 | ✅ | other | webkit | Features (/features.html) › internal links all resolve |  |
 | ✅ | other | edge | Features (/features.html) › loads with content, a title and no errors |  |
 | ✅ | other | edge | Features (/features.html) › internal links all resolve |  |
+| ✅ | other | chrome | Features (/features.html) › loads with content, a title and no errors |  |
+| ✅ | other | chrome | Features (/features.html) › internal links all resolve |  |
 | ✅ | other | webkit | Pricing (/pricing.html) › loads with content, a title and no errors |  |
 | ✅ | other | webkit | Pricing (/pricing.html) › internal links all resolve |  |
 | ✅ | other | edge | Pricing (/pricing.html) › loads with content, a title and no errors |  |
 | ✅ | other | edge | Pricing (/pricing.html) › internal links all resolve |  |
+| ✅ | other | chrome | Pricing (/pricing.html) › loads with content, a title and no errors |  |
+| ✅ | other | chrome | Pricing (/pricing.html) › internal links all resolve |  |
 | ✅ | other | webkit | Marketplace (/marketplace.html) › loads with content, a title and no errors |  |
 | ✅ | other | webkit | Marketplace (/marketplace.html) › internal links all resolve |  |
 | ✅ | other | edge | Marketplace (/marketplace.html) › loads with content, a title and no errors |  |
 | ✅ | other | edge | Marketplace (/marketplace.html) › internal links all resolve |  |
+| ✅ | other | chrome | Marketplace (/marketplace.html) › loads with content, a title and no errors |  |
+| ✅ | other | chrome | Marketplace (/marketplace.html) › internal links all resolve |  |
 | ✅ | other | webkit | Blog (/blog.html) › loads with content, a title and no errors |  |
 | ✅ | other | webkit | Blog (/blog.html) › internal links all resolve |  |
 | ✅ | other | edge | Blog (/blog.html) › loads with content, a title and no errors |  |
 | ✅ | other | edge | Blog (/blog.html) › internal links all resolve |  |
+| ✅ | other | chrome | Blog (/blog.html) › loads with content, a title and no errors |  |
+| ✅ | other | chrome | Blog (/blog.html) › internal links all resolve |  |
 | ✅ | other | webkit | Downloads (/downloads.html) › loads with content, a title and no errors |  |
 | ✅ | other | webkit | Downloads (/downloads.html) › internal links all resolve |  |
 | ✅ | other | edge | Downloads (/downloads.html) › loads with content, a title and no errors |  |
 | ✅ | other | edge | Downloads (/downloads.html) › internal links all resolve |  |
+| ✅ | other | chrome | Downloads (/downloads.html) › loads with content, a title and no errors |  |
+| ✅ | other | chrome | Downloads (/downloads.html) › internal links all resolve |  |
 | ✅ | other | webkit | Contact (/contact.html) › loads with content, a title and no errors |  |
 | ✅ | other | webkit | Contact (/contact.html) › internal links all resolve |  |
 | ✅ | other | edge | Contact (/contact.html) › loads with content, a title and no errors |  |
 | ✅ | other | edge | Contact (/contact.html) › internal links all resolve |  |
+| ✅ | other | chrome | Contact (/contact.html) › loads with content, a title and no errors |  |
+| ✅ | other | chrome | Contact (/contact.html) › internal links all resolve |  |
 | ✅ | other | webkit | Log in (old page) (/login.html) › loads with content, a title and no errors |  |
 | ✅ | other | webkit | Log in (old page) (/login.html) › internal links all resolve |  |
 | ✅ | other | edge | Log in (old page) (/login.html) › loads with content, a title and no errors |  |
 | ✅ | other | edge | Log in (old page) (/login.html) › internal links all resolve |  |
+| ✅ | other | chrome | Log in (old page) (/login.html) › loads with content, a title and no errors |  |
+| ✅ | other | chrome | Log in (old page) (/login.html) › internal links all resolve |  |
 | ✅ | other | webkit | POS app (/app/) › loads with content, a title and no errors |  |
 | ✅ | other | webkit | POS app (/app/) › internal links all resolve |  |
 | ✅ | other | edge | POS app (/app/) › loads with content, a title and no errors |  |
 | ✅ | other | edge | POS app (/app/) › internal links all resolve |  |
+| ✅ | other | chrome | POS app (/app/) › loads with content, a title and no errors |  |
+| ✅ | other | chrome | POS app (/app/) › internal links all resolve |  |
 | ✅ | other | webkit | KIRO LUX shop (/lux/) › loads with content, a title and no errors |  |
 | ✅ | other | webkit | KIRO LUX shop (/lux/) › internal links all resolve |  |
 | ✅ | other | edge | KIRO LUX shop (/lux/) › loads with content, a title and no errors |  |
 | ✅ | other | edge | KIRO LUX shop (/lux/) › internal links all resolve |  |
+| ✅ | other | chrome | KIRO LUX shop (/lux/) › loads with content, a title and no errors |  |
+| ✅ | other | chrome | KIRO LUX shop (/lux/) › internal links all resolve |  |
 
 Screenshots, videos and traces of failures: `qa/artifacts/test-results/` (open a trace with `npx playwright show-trace <trace.zip>`). Full interactive report: `qa/reports/playwright/index.html`.

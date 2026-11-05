@@ -26,7 +26,7 @@ function flatten(json, browserFallback) {
   for (const s of json?.suites || []) walk(s, []);
   return out;
 }
-const pw = flatten(read('playwright-results.json'), 'chromium');
+const pw = [...flatten(read('playwright-results.json'), 'chromium'), ...flatten(read('perf-results.json'), 'chromium')];
 const br = flatten(read('browsers-results.json'));
 const tests = [...pw, ...br];
 const unit = read('unit.json');

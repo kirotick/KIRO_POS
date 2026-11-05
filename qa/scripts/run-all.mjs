@@ -23,13 +23,19 @@ for (const [f, b] of Object.entries(keep)) fs.writeFileSync(path.join(qa, 'artif
 const steps = [
   run('Unit tests of every sub-project', 'node', ['scripts/run-unit.mjs']),
   run('Security scan', 'node', ['scripts/security.mjs']),
-  run('Browser tests in Chromium: screens, POS, shop, motion, responsive, accessibility, visual, performance, XSS', 'npx', ['playwright', 'test', '--project=chromium']),
+  run('Browser tests in Chromium: screens, POS, shop, motion, responsive, accessibility, visual, XSS', 'npx',
+    ['playwright', 'test', '--project=chromium', 'tests/e2e', 'tests/motion', 'tests/responsive', 'tests/accessibility', 'tests/visual', 'tests/security']),
+  // Timing is measured alone (one worker) so other browsers running at the same time do not skew it.
+  run('Performance in Chromium (measured alone)', 'npx', ['playwright', 'test', '--project=chromium', 'tests/performance', '--workers=1'],
+    { QA_JSON: './artifacts/perf-results.json' }),
 ];
 if (!quick) {
   // Only browsers that can actually start here; the rest are reported as "not tested", never as failures.
-  const probe = (name) => spawnSync('node', ['-e', `require('@playwright/test').${name === 'edge' ? 'chromium' : name}.launch(${name === 'edge' ? "{channel:'msedge'}" : ''}).then(b=>b.close()).then(()=>process.exit(0),()=>process.exit(1))`], { cwd: qa, shell: false, timeout: 60_000 }).status === 0;
-  const browsers = ['firefox', 'webkit', 'edge'].filter((b) => { const ok = probe(b); if (!ok) console.log(`(${b} cannot start on this machine: not tested)`); return ok; });
-  fs.writeFileSync(path.join(qa, 'artifacts/browsers-unavailable.json'), JSON.stringify(['firefox', 'webkit', 'edge'].filter((b) => !browsers.includes(b))));
+  const CHANNEL = { edge: 'msedge', chrome: 'chrome' };
+  const probe = (name) => spawnSync('node', ['-e', `require('@playwright/test').${CHANNEL[name] ? 'chromium' : name}.launch(${CHANNEL[name] ? `{channel:'${CHANNEL[name]}'}` : ''}).then(b=>b.close()).then(()=>process.exit(0),()=>process.exit(1))`], { cwd: qa, shell: false, timeout: 60_000 }).status === 0;
+  const ALL = ['chrome', 'firefox', 'webkit', 'edge']; // chrome = the real installed Google Chrome
+  const browsers = ALL.filter((b) => { const ok = probe(b); if (!ok) console.log(`(${b} cannot start on this machine: not tested)`); return ok; });
+  fs.writeFileSync(path.join(qa, 'artifacts/browsers-unavailable.json'), JSON.stringify(ALL.filter((b) => !browsers.includes(b))));
   if (browsers.length) steps.push(run(`Cross-browser: ${browsers.join(', ')}`, 'npx',
     ['playwright', 'test', ...browsers.map((b) => `--project=${b}`), 'tests/e2e/screens.spec.ts', 'tests/e2e/pos-app.spec.ts', 'tests/e2e/lux-shop.spec.ts'],
     { QA_JSON: './artifacts/browsers-results.json' }));

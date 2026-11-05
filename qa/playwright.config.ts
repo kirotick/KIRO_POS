@@ -38,6 +38,8 @@ export default defineConfig({
     { name: 'firefox', use: { ...devices['Desktop Firefox'], viewport: { width: 1366, height: 768 } } },
     { name: 'webkit', use: { ...devices['Desktop Safari'], viewport: { width: 1366, height: 768 } } },
     { name: 'edge', use: { ...devices['Desktop Edge'], channel: 'msedge', viewport: { width: 1366, height: 768 } } },
+    // The real installed Google Chrome (not Playwright's bundled Chromium).
+    { name: 'chrome', use: { ...devices['Desktop Chrome'], channel: 'chrome', viewport: { width: 1366, height: 768 } } },
   ],
   webServer: local ? { command: 'node scripts/serve.mjs', url: `http://localhost:${PORT}/`, reuseExistingServer: !process.env.CI, timeout: 20_000 } : undefined,
 });

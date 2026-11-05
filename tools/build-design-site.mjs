@@ -109,10 +109,30 @@ function applyLayoutFixes(name, t) {
   return t;
 }
 
-// Browser-tab icon (the same KIRO icon as the POS app). Without it browsers ask for /favicon.ico and get a 404
-// (found by qa/tests/e2e/screens.spec.ts in Microsoft Edge).
-const ICON = '<link rel="icon" type="image/png" href="favicon.png">';
-const addIcon = (t) => (/rel="icon"/.test(t) ? t : t.replace('</head>', ICON + '\n</head>'));
+// Browser-tab icon and link-preview picture: the red KIRO logo from the site header (owner's choice, not the
+// POS app's blue/orange icon). Without an icon browsers ask for /favicon.ico and get a 404 (found by QA in Edge).
+const SITE = 'https://kiro-pos.netlify.app';
+const ICON = [
+  '<link rel="icon" type="image/png" sizes="192x192" href="favicon.png">',
+  '<link rel="apple-touch-icon" href="apple-touch-icon.png">',
+  '<meta name="theme-color" content="#E30B1C">',
+].join('\n');
+const addIcon = (t, file) => {
+  if (!/rel="icon"/.test(t)) t = t.replace('</head>', ICON + '\n</head>');
+  if (!/property="og:image"/.test(t)) {
+    const title = ((t.match(/<title>([^<]*)<\/title>/) || [])[1] || 'KIRO').replace(/"/g, '&quot;');
+    const desc = ((t.match(/<meta name="description" content="([^"]*)"/) || [])[1]) || 'Billing, kitchen screen, UPI and day close for restaurants, cafés, bars and food counters.';
+    const url = SITE + '/' + (file === 'index.html' ? '' : file);
+    t = t.replace('</head>', [
+      `<meta property="og:type" content="website">`, `<meta property="og:site_name" content="KIRO">`,
+      `<meta property="og:title" content="${title}">`, `<meta property="og:description" content="${desc}">`,
+      `<meta property="og:url" content="${url}">`, `<meta property="og:image" content="${SITE}/og-image.png">`,
+      `<meta property="og:image:width" content="1200">`, `<meta property="og:image:height" content="630">`,
+      `<meta name="twitter:card" content="summary_large_image">`, `<meta name="twitter:image" content="${SITE}/og-image.png">`,
+    ].join('\n') + '\n</head>');
+  }
+  return t;
+};
 
 function rewriteLinks(t) {
   t = t.replace(/([A-Za-z0-9_-]+)\.dc\.html/g, (m, name) => LINK_TO[name] || PAGES[name] || m);
@@ -123,7 +143,7 @@ function rewriteLinks(t) {
 
 for (const [name, file] of Object.entries(PAGES)) {
   let t = fs.readFileSync(path.join(src, name + '.dc.html'), 'utf8');
-  t = addIcon(applyLayoutFixes(name, rewriteLinks(t)));
+  t = addIcon(applyLayoutFixes(name, rewriteLinks(t)), file);
   if (name === 'Main') t = removeLaunchScreen(t).replace('</head>', HERO_FIX + '\n</head>');
   t = t.replace(/<script src="\.\/support\.js"><\/script>\s*/g, '');
 

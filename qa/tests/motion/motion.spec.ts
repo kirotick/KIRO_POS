@@ -210,11 +210,13 @@ for (const zoom of [1.25, 1, 0.8, 0.67]) {
       const h1 = parseFloat(getComputedStyle(sec.querySelector('h1')!).fontSize);
       const content = [...sec.querySelectorAll('h1,p,a,.cv-bar')].filter((e) => !e.closest('#kiro-hero-cards') && R(e).width);
       const touches = cards.flatMap((k, i) => [...content.filter((e) => hit(R(k), R(e))).map((e) => `card${i}/${e.tagName}`), ...cards.filter((m, j) => j > i && hit(R(k), R(m))).map((_, j) => `card${i}/card`)]);
-      return { w: R(cards[0]).width, h1, sizes: new Set(cards.map((k) => Math.round(R(k).width))).size, touches };
+      return { w: R(cards[0]).width, h: R(cards[0]).height, h1, sizes: new Set(cards.map((k) => Math.round(R(k).width))).size, touches };
     });
     expect(r.sizes).toBe(1);
     expect(r.touches).toEqual([]);
-    if (zoom <= 1) expect(Math.abs(r.w / r.h1 - 1.4), 'card width follows the heading').toBeLessThan(0.05);
+    // Card height = 2.6 x heading size (owner: "big"), unless the free space caps it; shape stays 0.7.
+    if (zoom <= 1) expect(Math.abs(r.h / r.h1 - 2.6), 'card height follows the heading').toBeLessThan(0.05);
+    expect(Math.abs(r.w / r.h - 0.7)).toBeLessThan(0.02);
     await ctx.close();
   });
 }

@@ -59,14 +59,17 @@ function removeLaunchScreen(t) {
 // width AND height (so wide, short and tall screens all fit), never touching each other, the text or the
 // stats bar, and all four moving up and down together. Laptops and desktops (over 900px): two cards each side.
 // Phones and tablets: one row of four.
-// Size follows the hero heading (clamp(38px,6vw,76px)) x 1.4, so the cards grow and shrink with browser zoom
-// exactly like the text (106px on a 100% laptop, smaller at 80%), and never taller than 14.5% of the screen.
+// Size (owner: "big, not that small"): card HEIGHT follows the hero heading (clamp(38px,6vw,76px)) x 2.6, so
+// cards grow and shrink with browser zoom like the text (about 142x198 on a 100% laptop). It is capped by the
+// space actually free between the top of the hero and the stats bar, so two cards per side never touch.
 // Owner's choice: the hero cards (bob + photo swap) always move, even when the device asks for reduced motion.
 const HERO_FIX = `<style id="kiro-hero-fix">
 @keyframes khBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @media (min-width:901px){
-  #kiro-hero-cards{--kh-w:max(80px,min(calc(clamp(38px,6vw,76px) * 1.4),14.5vh));--kh-edge:clamp(20px,3vw,56px);--kh-top:max(6%,36px);--kh-above-bar:calc(clamp(20px,4vh,40px) + 132px)}
-  #kiro-hero-cards .kh-card.kh-a,#kiro-hero-cards .kh-card.kh-b,#kiro-hero-cards .kh-card.kh-c,#kiro-hero-cards .kh-card.kh-d{width:var(--kh-w);height:auto;aspect-ratio:.66;border-radius:18px}
+  #kiro-hero-cards{--kh-edge:clamp(20px,3vw,56px);--kh-top:36px;--kh-above-bar:calc(clamp(20px,4vh,40px) + 132px);
+    --kh-h:max(120px,min(calc(clamp(38px,6vw,76px) * 2.6),calc((min(92vh,880px) - var(--kh-top) - var(--kh-above-bar) - 40px) / 2)));
+    --kh-w:calc(var(--kh-h) * .7)}
+  #kiro-hero-cards .kh-card.kh-a,#kiro-hero-cards .kh-card.kh-b,#kiro-hero-cards .kh-card.kh-c,#kiro-hero-cards .kh-card.kh-d{width:var(--kh-w);height:var(--kh-h);aspect-ratio:auto;border-radius:20px}
   #kiro-hero-cards .kh-card.kh-a{left:var(--kh-edge);right:auto;top:var(--kh-top);bottom:auto}
   #kiro-hero-cards .kh-card.kh-c{left:var(--kh-edge);right:auto;top:auto;bottom:var(--kh-above-bar)}
   #kiro-hero-cards .kh-card.kh-b{left:auto;right:var(--kh-edge);top:var(--kh-top);bottom:auto}

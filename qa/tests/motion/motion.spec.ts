@@ -168,15 +168,16 @@ test.describe('normal motion', () => {
 test.describe('reduced motion (visitor turned animations off)', () => {
   test.beforeEach(async ({ page }) => { await page.emulateMedia({ reducedMotion: 'reduce' }); });
 
-  test('hero cards stand still, stay the same size and visible', async ({ page }) => {
+  // Owner's decision (2026-11-05): the Home hero cards always move (bob + photo swap), even with reduced motion.
+  test('hero cards still move together and swap photos, same size', async ({ page }) => {
     await open(page, '/');
     const s = await cardState(page);
     expect(s).toHaveLength(4);
-    expect(s.filter((c) => c.anim && c.anim.state === 'running'), 'no running card animations').toEqual([]);
+    expect(s.filter((c) => c.anim?.name === 'khBob' && c.anim.state === 'running'), 'all four bob').toHaveLength(4);
     expect(new Set(s.map((c) => `${c.w}x${c.h}`)).size).toBe(1);
     const before = await page.$$eval('#kiro-hero-cards img', (i) => i.map((x) => (x as HTMLImageElement).src.slice(-40)));
     await page.waitForTimeout(4500);
-    expect(await page.$$eval('#kiro-hero-cards img', (i) => i.map((x) => (x as HTMLImageElement).src.slice(-40))), 'photos do not swap').toEqual(before);
+    expect(await page.$$eval('#kiro-hero-cards img', (i) => i.map((x) => (x as HTMLImageElement).src.slice(-40))), 'photos swap').not.toEqual(before);
   });
 
   test('every page: nothing runs forever, content still reachable', async ({ page }) => {
@@ -189,6 +190,31 @@ test.describe('reduced motion (visitor turned animations off)', () => {
       await expect(page.locator('body')).not.toBeEmpty();
     }
     record('reduced-motion-running', { running });
-    expect(running).toEqual([]);
+    // Only the hero cards may keep moving (owner's decision); every other loop must stop.
+    expect(running.filter((r) => r !== 'Home: khBob')).toEqual([]);
   });
 });
+
+// Browser zoom: the hero cards grow and shrink with zoom like the heading (always 1.4 x its size),
+// stay the same size and never touch the text, at 125%, 100%, 80% and 67% on a 1536x730 laptop.
+for (const zoom of [1.25, 1, 0.8, 0.67]) {
+  test(`zoom ${Math.round(zoom * 100)}%: hero cards scale with the heading`, async ({ browser }) => {
+    const ctx = await browser.newContext({ viewport: { width: Math.round(1536 / zoom), height: Math.round(730 / zoom) } });
+    const page = await ctx.newPage();
+    await open(page, '/');
+    const r = await page.evaluate(() => {
+      const R = (e: Element) => e.getBoundingClientRect();
+      const hit = (a: DOMRect, b: DOMRect) => a.left < b.right && b.left < a.right && a.top - 10 < b.bottom && b.top < a.bottom;
+      const sec = document.querySelector('section[aria-labelledby="cover-title"]')!;
+      const cards = [...sec.querySelectorAll('.kh-card')];
+      const h1 = parseFloat(getComputedStyle(sec.querySelector('h1')!).fontSize);
+      const content = [...sec.querySelectorAll('h1,p,a,.cv-bar')].filter((e) => !e.closest('#kiro-hero-cards') && R(e).width);
+      const touches = cards.flatMap((k, i) => [...content.filter((e) => hit(R(k), R(e))).map((e) => `card${i}/${e.tagName}`), ...cards.filter((m, j) => j > i && hit(R(k), R(m))).map((_, j) => `card${i}/card`)]);
+      return { w: R(cards[0]).width, h1, sizes: new Set(cards.map((k) => Math.round(R(k).width))).size, touches };
+    });
+    expect(r.sizes).toBe(1);
+    expect(r.touches).toEqual([]);
+    if (zoom <= 1) expect(Math.abs(r.w / r.h1 - 1.4), 'card width follows the heading').toBeLessThan(0.05);
+    await ctx.close();
+  });
+}

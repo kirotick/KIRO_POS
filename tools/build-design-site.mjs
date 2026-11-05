@@ -57,12 +57,15 @@ function removeLaunchScreen(t) {
 
 // Home page hero photo cards, as the owner asked: smaller, all four the same size, scaled to the screen's
 // width AND height (so wide, short and tall screens all fit), never touching each other, the text or the
-// stats bar, and all four moving up and down together. Motion stops when the visitor's device asks for
-// reduced motion. Laptops and desktops (over 900px): two cards each side. Phones and tablets: one row of four.
+// stats bar, and all four moving up and down together. Laptops and desktops (over 900px): two cards each side.
+// Phones and tablets: one row of four.
+// Size follows the hero heading (clamp(38px,6vw,76px)) x 1.4, so the cards grow and shrink with browser zoom
+// exactly like the text (106px on a 100% laptop, smaller at 80%), and never taller than 14.5% of the screen.
+// Owner's choice: the hero cards (bob + photo swap) always move, even when the device asks for reduced motion.
 const HERO_FIX = `<style id="kiro-hero-fix">
 @keyframes khBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @media (min-width:901px){
-  #kiro-hero-cards{--kh-w:clamp(88px,min(9.5vw,14.5vh),170px);--kh-edge:clamp(20px,3vw,56px);--kh-top:max(6%,36px);--kh-above-bar:calc(clamp(20px,4vh,40px) + 132px)}
+  #kiro-hero-cards{--kh-w:max(80px,min(calc(clamp(38px,6vw,76px) * 1.4),14.5vh));--kh-edge:clamp(20px,3vw,56px);--kh-top:max(6%,36px);--kh-above-bar:calc(clamp(20px,4vh,40px) + 132px)}
   #kiro-hero-cards .kh-card.kh-a,#kiro-hero-cards .kh-card.kh-b,#kiro-hero-cards .kh-card.kh-c,#kiro-hero-cards .kh-card.kh-d{width:var(--kh-w);height:auto;aspect-ratio:.66;border-radius:18px}
   #kiro-hero-cards .kh-card.kh-a{left:var(--kh-edge);right:auto;top:var(--kh-top);bottom:auto}
   #kiro-hero-cards .kh-card.kh-c{left:var(--kh-edge);right:auto;top:auto;bottom:var(--kh-above-bar)}
@@ -73,9 +76,7 @@ const HERO_FIX = `<style id="kiro-hero-fix">
   #kiro-hero-cards{grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:clamp(8px,2.5vw,14px) !important;max-width:480px;margin-left:auto !important;margin-right:auto !important;margin-bottom:20px !important;padding:14px 16px 0 !important}
   #kiro-hero-cards .kh-card{aspect-ratio:.66 !important;border-radius:14px !important}
 }
-@media (prefers-reduced-motion:no-preference){
-  #kiro-hero-cards .kh-card{animation:khBob 6s ease-in-out infinite !important;animation-delay:0s !important}
-}
+#kiro-hero-cards .kh-card{animation:khBob 6s ease-in-out infinite !important;animation-delay:0s !important}
 /* Found by qa/tests/motion: the tilted cards (.tilt, inline "kiroBob" animation) kept bobbing for visitors who
    asked their device to reduce motion. Every other looping animation on the page already stops. */
 @media (prefers-reduced-motion:reduce){
@@ -93,6 +94,8 @@ const LAYOUT_FIXES = {
     ['flex:1 1 300px;min-width:0;display:grid;grid-template-columns:1fr 1fr;gap:12px', 'flex:1 1 300px;min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px'],
     // 1280px laptops: the floating "KOT #12" badge sat 6px past the screen edge.
     ['position: absolute; right: -6px; top: 40px;', 'position: absolute; right: 0; top: 40px;'],
+    // Owner's choice: the hero photos keep cross-fading even when the device asks for reduced motion.
+    ['var pool=[cards[0].src,cards[1].src,cards[2].src,cards[3].src];if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;', 'var pool=[cards[0].src,cards[1].src,cards[2].src,cards[3].src];'],
     // Accessibility (qa/tests/accessibility, axe "critical"): the theme switcher is a tablist, so its buttons are tabs.
     ['<button type="button" class="th-btn" data-i=', '<button type="button" class="th-btn" role="tab" data-i='],
   ],
